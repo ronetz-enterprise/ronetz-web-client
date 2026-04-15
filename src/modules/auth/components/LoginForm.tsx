@@ -1,7 +1,21 @@
-import { GalleryVerticalEnd } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useAuth } from "../hooks/useAuth"
+import { useForm } from "react-hook-form"
+import type { LoginRequest } from "../api/type"
+import { Loader2 } from "lucide-react"
+
+import { GalleryVerticalEnd } from "lucide-react"
+
 import {
   Field,
   FieldDescription,
@@ -9,15 +23,22 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+   const { login, isLoading } = useAuth();
+  const { register, handleSubmit } = useForm<LoginRequest>();
+
+  const onSubmit = (data: LoginRequest) => {
+    login(data);
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
             <a
@@ -41,6 +62,17 @@ export function LoginForm({
               type="email"
               placeholder="m@example.com"
               required
+              {...register("email")}
+            />
+          </Field>
+           <Field>
+            <FieldLabel htmlFor="password">Email</FieldLabel>
+            <Input
+              id="password"
+              type="password"
+              placeholder="........"
+              required
+              {...register("rawPassword")}
             />
           </Field>
           <Field>
@@ -73,6 +105,71 @@ export function LoginForm({
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
       </FieldDescription>
+    </div>
+  )
+}
+
+
+export function LoginForms({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
+  const { login, isLoading } = useAuth();
+  const { register, handleSubmit } = useForm<LoginRequest>();
+
+  const onSubmit = (data: LoginRequest) => {
+    login(data);
+  };
+
+  return (
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Card className="rounded-[2.5rem] border-slate-100 shadow-xl p-4">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className="text-3xl font-black text-slate-900 tracking-tight uppercase">Connexion</CardTitle>
+          <CardDescription className="font-medium text-slate-500">
+            Entrez vos identifiants pour accéder à Rik WiFi
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="email" className="font-black text-[10px] uppercase tracking-widest text-slate-400 ml-1">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  {...register("email")}
+                  className="h-14 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:border-primary/20 transition-all font-bold px-5"
+                />
+              </div>
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password" className="font-black text-[10px] uppercase tracking-widest text-slate-400 ml-1">Mot de passe</Label>
+                  <a
+                    href="#"
+                    className="ml-auto inline-block text-[10px] font-black uppercase tracking-widest text-primary hover:underline underline-offset-4"
+                  >
+                    Oublié ?
+                  </a>
+                </div>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  required 
+                  {...register("password")}
+                  className="h-14 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:border-primary/20 transition-all font-bold px-5"
+                />
+              </div>
+              <Button type="submit" disabled={isLoading} className="w-full h-14 rounded-2xl font-black tracking-widest bg-slate-900 hover:bg-slate-800 shadow-xl shadow-slate-900/10 active:scale-95 transition-all">
+                {isLoading ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : null}
+                SE CONNECTER
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }
