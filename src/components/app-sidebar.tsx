@@ -1,9 +1,8 @@
 import * as React from "react"
 import {
-    Command,
+    Wifi,
 } from "lucide-react"
 
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
@@ -11,7 +10,6 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarHeader,
-    SidebarRail,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/shared/store/authStore"
 import { navigationConfig } from "@/shared/config/navigation"
@@ -23,13 +21,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const teams = [
         {
             name: "Rik WiFi",
-            logo: Command,
+            logo: Wifi,
             plan: "Pro v4",
         }
     ]
 
     const userData = {
-        name: user ? `${user.name}` : "Utilisateur",
+        name: user ? (user.firstName ?? user.email) : "Utilisateur",
         email: user?.email || "",
         avatar: "", // Placeholder or user avatar if available
     }

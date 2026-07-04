@@ -9,21 +9,22 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
-  // const { isAuthenticated, user } = useAuthStore();
-  // const location = useLocation();
+  const { isAuthenticated, user } = useAuthStore();
+  const location = useLocation();
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/login" state={{ from: location }} replace />;
-  // }
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-  // if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-  //   // Redirect to a default page based on role if unauthorized
-  //   const defaultPath = user.role === 'CLIENT' ? '/jetons' : 
-  //                       user.role === 'ADMIN_WIFI' ? '/sites' : 
-  //                       '/admin/users';
-  //   return <Navigate to={defaultPath} replace />;
-  // }
-
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    const defaultPath =
+      user.role === 'CLIENT'
+        ? '/souscriptions'
+        : user.role === 'ADMIN_WIFI'
+          ? '/sites'
+          : '/admin/users';
+    return <Navigate to={defaultPath} replace />;
+  }
 
   return <>{children}</>;
 };

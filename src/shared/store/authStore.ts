@@ -20,10 +20,17 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       isAuthenticated: false,
       setUser: (user) => set({ user, isAuthenticated: !!user }),
-      setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
+      setTokens: (accessToken, refreshToken) => {
+        // Keep compatibility with Axios interceptor (reads plain keys).
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        set({ accessToken, refreshToken });
+      },
       logout: () => {
         set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
         localStorage.removeItem('auth-storage');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
       },
     }),
     {

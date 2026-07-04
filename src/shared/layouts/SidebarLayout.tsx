@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { navigationConfig } from '../config/navigation';
 import { 
   LogOut, 
-  Menu, 
-  X,
-  User as UserIcon,
-  ChevronRight
 } from 'lucide-react';
 import { 
   Sidebar, 
@@ -34,6 +30,10 @@ const SidebarLayout: React.FC = () => {
   const filteredNav = navigationConfig.filter(item => 
     user && item.roles.includes(user.role)
   );
+
+  const initials =
+    (user?.firstName?.[0] ?? user?.email?.[0] ?? "?").toUpperCase();
+  const displayName = user?.firstName ?? user?.email ?? "—";
 
   return (
     <SidebarProvider>
@@ -69,10 +69,10 @@ const SidebarLayout: React.FC = () => {
              <div className="p-4 bg-slate-50 rounded-2xl space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">
-                    {user?.nom?.[0]}{user?.prenom?.[0]}
+                    {initials}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate">{user?.prenom} {user?.nom}</p>
+                    <p className="text-sm font-bold text-slate-900 truncate">{displayName}</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{user?.role}</p>
                   </div>
                 </div>

@@ -1,39 +1,51 @@
 import {
-  LayoutDashboard,
+  Home,
   MapPin,
   Router,
   Settings,
   ShoppingBag,
-  HistoryIcon,
   Users,
   History,
-  CreditCard,
-  Ticket
+  Ticket,
+  Flag,
+  Wallet,
+  BarChart2,
+  WalletCards,
 } from 'lucide-react';
-import type { UserRole } from '../types';
+import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
   title: string;
   href: string;
-  icon: any;
+  icon: LucideIcon;
   roles: string[];
 }
 
 export const navigationConfig: NavItem[] = [
-  // Common (Profile) - actually it's usually in a special place, but we'll include it or keep it separate
-
-  // ADMIN-only
+  // SUPER_ADMIN only
   {
     title: 'Utilisateurs',
     href: '/admin/users',
     icon: Users,
-    roles: ['ADMIN'],
+    roles: ['SUPER_ADMIN'],
   },
   {
     title: 'Logs Système',
     href: '/admin/logs',
     icon: History,
-    roles: ['ADMIN'],
+    roles: ['SUPER_ADMIN'],
+  },
+  {
+    title: 'Countries',
+    href: '/admin/countries',
+    icon: Flag,
+    roles: ['SUPER_ADMIN'],
+  },
+  {
+    title: 'Méthodes de paiement',
+    href: '/admin/payment-methods',
+    icon: Wallet,
+    roles: ['SUPER_ADMIN'],
   },
 
   // ADMIN_WIFI
@@ -55,8 +67,25 @@ export const navigationConfig: NavItem[] = [
     icon: Settings,
     roles: ['ADMIN_WIFI'],
   },
-
+  {
+    title: 'Statistiques',
+    href: '/stats',
+    icon: BarChart2,
+    roles: ['ADMIN_WIFI'],
+  },
+  {
+    title: 'Portefeuille',
+    href: '/wallet',
+    icon: WalletCards,
+    roles: ['ADMIN_WIFI'],
+  },
   // CLIENT
+  {
+    title: 'Accueil',
+    href: '/home',
+    icon: Home,
+    roles: ['CLIENT'],
+  },
   {
     title: 'Acheter un forfait',
     href: '/acheter',
@@ -64,8 +93,8 @@ export const navigationConfig: NavItem[] = [
     roles: ['CLIENT'],
   },
   {
-    title: 'Mes Jetons',
-    href: '/jetons',
+    title: 'Mes Souscriptions',
+    href: '/souscriptions',
     icon: Ticket,
     roles: ['CLIENT'],
   },
