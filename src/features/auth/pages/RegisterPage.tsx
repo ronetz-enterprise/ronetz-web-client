@@ -8,6 +8,7 @@ import { Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCountries } from '@/shared/hooks/useCountries';
 import { useMacAddress } from '@/shared/hooks/useMacAddress';
+import { cn } from '@/shared/lib/utils';
 import type { SignInRequest } from '@/features/auth/types/type';
 import type { Country } from '@/shared/types';
 
@@ -38,16 +39,16 @@ const RegisterPage: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Créer un compte</h1>
+      <div className="flex flex-col gap-1.5">
+        <h2 className="text-2xl font-semibold tracking-tight">Créer un compte</h2>
         <p className="text-sm text-muted-foreground">
           Rejoignez Rik WiFi pour profiter d'une connexion haut débit
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
-          <Label>Prénom & Nom</Label>
+          <Label className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Prénom &amp; Nom</Label>
           <div className="grid grid-cols-2 gap-2">
             <Input
               placeholder="Prénom"
@@ -61,7 +62,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Email</Label>
           <Input
             id="email"
             type="email"
@@ -71,7 +72,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="phone">Téléphone</Label>
+          <Label htmlFor="phone" className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Téléphone</Label>
           {countriesError && (
             <p className="text-xs text-destructive">
               Impossible de charger les pays. Vérifiez la variable VITE_API_URL puis rechargez.
@@ -81,7 +82,7 @@ const RegisterPage: React.FC = () => {
             <select
               {...register("countryIsoCode", { required: "Pays requis" })}
               onChange={handleCountryChange}
-              className="w-1/3 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              className="w-1/3 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors focus:outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               <option value="">Pays</option>
               {countries
@@ -102,7 +103,7 @@ const RegisterPage: React.FC = () => {
                 id="phone"
                 type="tel"
                 placeholder={dialCode ? '' : '6xx xx xx xx'}
-                className={dialCode ? 'pl-12' : ''}
+                className={cn(dialCode ? 'pl-12' : '')}
                 {...register("phoneNumber", { required: "Téléphone requis" })}
               />
             </div>
@@ -110,7 +111,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="password" className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Mot de passe</Label>
           <Input
             id="password"
             type="password"

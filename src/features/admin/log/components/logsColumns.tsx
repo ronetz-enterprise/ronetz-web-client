@@ -1,20 +1,12 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { type SystemLog } from "@/shared/types";
-import { AlertCircle, AlertTriangle, Info } from "lucide-react";
+import { StatusBadge, type StatusBadgeTone } from "@/shared/components/StatusBadge";
 
-const getLevelColor = (level: string) => {
-  switch(level) {
-    case 'ERROR': return 'text-red-500 bg-red-50 border-red-100';
-    case 'WARNING': return 'text-orange-500 bg-orange-50 border-orange-100';
-    default: return 'text-blue-500 bg-blue-50 border-blue-100';
-  }
-};
-
-const getLevelIcon = (level: string) => {
-  switch(level) {
-    case 'ERROR': return <AlertCircle size={12} />;
-    case 'WARNING': return <AlertTriangle size={12} />;
-    default: return <Info size={12} />;
+const levelTone = (level: string): StatusBadgeTone => {
+  switch (level) {
+    case 'ERROR': return 'danger';
+    case 'WARNING': return 'warning';
+    default: return 'neutral';
   }
 };
 
@@ -25,7 +17,7 @@ export const logsColumns: ColumnDef<SystemLog>[] = [
     cell: ({ row }) => {
       const ts = row.getValue<string>("timestamp");
       return (
-        <span className="text-slate-400 whitespace-nowrap">
+        <span className="text-muted-foreground whitespace-nowrap">
           {new Date(ts).toLocaleString("fr-FR")}
         </span>
       );
@@ -37,10 +29,9 @@ export const logsColumns: ColumnDef<SystemLog>[] = [
     cell: ({ row }) => {
       const niveau = row.getValue<string>("level");
       return (
-        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${getLevelColor(niveau)}`}>
-          {getLevelIcon(niveau)}
+        <StatusBadge tone={levelTone(niveau)} className="uppercase tracking-widest text-[10px] font-semibold">
           {niveau}
-        </span>
+        </StatusBadge>
       );
     },
   },
@@ -49,7 +40,7 @@ export const logsColumns: ColumnDef<SystemLog>[] = [
     header: "Composant",
     cell: ({ row }) => {
       return (
-        <span className="font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-md">
+        <span className="font-bold text-foreground bg-muted px-2 py-1 rounded-md">
           {row.getValue<string>("component")}
         </span>
       );
@@ -60,7 +51,7 @@ export const logsColumns: ColumnDef<SystemLog>[] = [
     header: "Message",
     cell: ({ row }) => {
       return (
-        <span className="text-slate-600 truncate max-w-xl inline-block align-bottom">
+        <span className="text-muted-foreground truncate max-w-xl inline-block align-bottom">
           {row.getValue<string>("message")}
         </span>
       );

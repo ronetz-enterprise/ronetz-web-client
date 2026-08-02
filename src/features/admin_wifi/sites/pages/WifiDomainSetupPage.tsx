@@ -40,7 +40,7 @@ const WifiDomainSetupPage: React.FC = () => {
   // ⏳ Attendre la réponse API AVANT de décider
   if (loading || exist === null) {
     return (
-      <div className="min-h-svh flex items-center justify-center">
+      <div className="min-h-svh flex items-center justify-center bg-background text-foreground">
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
@@ -112,17 +112,17 @@ const WifiDomainSetupPage: React.FC = () => {
   return (
     <div className="min-h-svh flex flex-col items-center justify-center bg-background p-6 md:p-10">
       <div className="w-full max-w-md">
-        <Card className="rounded-[2rem] border-slate-200/80 shadow-lg">
+        <Card className="rounded-lg border shadow-lg">
           <CardHeader className="space-y-3 text-center pb-2">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               <Wifi className="h-7 w-7" />
             </div>
 
-            <CardTitle className="text-2xl font-semibold tracking-tight text-slate-900">
+            <CardTitle className="text-2xl font-semibold tracking-tight text-foreground">
               Votre domaine Wi-Fi
             </CardTitle>
 
-            <CardDescription className="text-base text-slate-500">
+            <CardDescription className="text-base text-muted-foreground">
               Créez un domaine pour regrouper vos sites et routeurs.
             </CardDescription>
           </CardHeader>
@@ -132,7 +132,7 @@ const WifiDomainSetupPage: React.FC = () => {
               <div className="space-y-2 text-left">
                 <Label
                   htmlFor="domain-name"
-                  className="text-xs font-semibold uppercase tracking-wider text-slate-500"
+                  className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
                 >
                   Nom du domaine
                 </Label>
@@ -142,7 +142,6 @@ const WifiDomainSetupPage: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex. Hôtel Central, Campus Nord…"
-                  className="h-12 rounded-xl"
                   autoComplete="organization"
                   disabled={submitting}
                 />
@@ -150,7 +149,7 @@ const WifiDomainSetupPage: React.FC = () => {
 
               <Button
                 type="submit"
-                className="h-12 w-full rounded-xl font-semibold"
+                className="w-full"
                 disabled={submitting || !name.trim()}
               >
                 {submitting ? (

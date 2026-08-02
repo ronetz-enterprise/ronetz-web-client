@@ -17,7 +17,7 @@ const ForfaitListPage: React.FC = () => {
   return (
     <div className="space-y-8 h-full flex flex-col">
       <div className="flex items-center justify-between px-3 lg:px-5 border-b py-3">
-        <h1 className="text-xl font-semibold text-slate-900 tracking-tight">Forfaits</h1>
+        <h1 className="text-xl font-semibold text-foreground tracking-tight">Forfaits</h1>
         {user?.role === 'ADMIN_WIFI' ? (
           <ForfaitDialog onCreate={createForfait} />
         ) : (
@@ -58,12 +58,12 @@ const ForfaitListPage: React.FC = () => {
 
             />
           ))) :
-            <div className="col-span-full flex flex-col items-center justify-center text-center 
-                rounded-3xl border border-dashed border-slate-200 p-10 space-y-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
-                <PackagePlus className="h-6 w-6 text-slate-500" />
+            <div className="col-span-full flex flex-col items-center justify-center text-center
+                rounded-lg border border-dashed border-border p-10 space-y-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-border">
+                <PackagePlus className="h-5 w-5 text-muted-foreground" />
               </div>
-              <p className="text-base font-semibold text-slate-800">
+              <p className="text-base font-semibold text-foreground">
                 Aucun forfait interne disponible
               </p>
               <p className="text-sm text-muted-foreground max-w-xs">

@@ -47,7 +47,7 @@ const PaiementPage: React.FC = () => {
 
   if (!state?.product || !state?.siteId) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center p-10">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center p-10 bg-background text-foreground">
         <p className="text-sm text-muted-foreground">Aucun forfait sélectionné</p>
         <Button variant="outline" onClick={() => navigate(-1)}>Retour</Button>
       </div>
@@ -89,7 +89,7 @@ const PaiementPage: React.FC = () => {
 
   if (isProcessing) {
     return (
-      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center gap-6 z-50">
+      <div className="fixed inset-0 bg-background text-foreground flex flex-col items-center justify-center gap-6 z-50">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <div className="text-center space-y-1">
           <p className="font-medium">Traitement en cours</p>
@@ -100,7 +100,7 @@ const PaiementPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b bg-background sticky top-0 z-10">
         <Button

@@ -2,7 +2,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { type Country } from "@/shared/types";
 import { MoreHorizontal, Ban, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/shared/components/StatusBadge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,9 +39,9 @@ export const getCountryColumns = (actions: CountryTableActions): ColumnDef<Count
     cell: ({ row }) => {
       const blocked = Boolean(!row.original.active);
       return (
-        <Badge variant={blocked ? "destructive" : "secondary"} className="font-medium">
+        <StatusBadge tone={blocked ? "danger" : "success"}>
           {blocked ? "Bloqué" : "Autorisé"}
-        </Badge>
+        </StatusBadge>
       );
     },
   },
@@ -55,7 +55,7 @@ export const getCountryColumns = (actions: CountryTableActions): ColumnDef<Count
         <div className="text-right">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-slate-500 hover:text-slate-900">
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground">
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">Actions pays</span>
               </Button>

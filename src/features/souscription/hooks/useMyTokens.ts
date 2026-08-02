@@ -19,7 +19,17 @@ export const useMyTokens = () => {
     }
   }, []);
 
+  const revoke = useCallback(async (id: string) => {
+    try {
+      await tokenApi.revoke(id);
+      toast.success("Accès WiFi déconnecté");
+      setTokens((prev) => prev.map((t) => (t.id === id ? { ...t, status: "REVOKED" } : t)));
+    } catch {
+      toast.error("Impossible de déconnecter cet accès");
+    }
+  }, []);
+
   useEffect(() => { refresh(); }, [refresh]);
 
-  return { tokens, loading, refresh };
+  return { tokens, loading, refresh, revoke };
 };

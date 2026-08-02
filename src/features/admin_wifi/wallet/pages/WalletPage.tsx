@@ -1,49 +1,22 @@
 import { ArrowDownToLine, ArrowUpFromLine, RefreshCw, Wallet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatAmount, type TransactionType } from "@/shared/types";
 import { useWallet } from "../hooks/useWallet";
 import { WithdrawalDialog } from "../components/WithdrawalDialog";
+import { KpiCard } from "@/shared/components/KpiCard";
+import { StatusBadge, type StatusBadgeTone } from "@/shared/components/StatusBadge";
 
 const TX_LABEL: Record<TransactionType, string> = {
   CREDIT: "Vente",
   DEBIT:  "Retrait",
 };
 
-const TX_BADGE: Record<TransactionType, string> = {
-  CREDIT: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  DEBIT:  "bg-orange-500/10  text-orange-600  border-orange-500/20",
+const TX_TONE: Record<TransactionType, StatusBadgeTone> = {
+  CREDIT: "success",
+  DEBIT:  "warning",
 };
-
-function KpiCard({
-  title, value, subtitle, icon: Icon, loading,
-}: {
-  title: string; value: string; subtitle?: string;
-  icon: React.ElementType; loading: boolean;
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-          <Icon className="h-4 w-4 text-primary" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <Skeleton className="h-8 w-32 mt-1" />
-        ) : (
-          <>
-            <p className="text-2xl font-bold tracking-tight">{value}</p>
-            {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
 
 export default function WalletPage() {
   const { wallet, transactions, loading, withdrawing, refresh, requestWithdrawal } = useWallet();
@@ -65,9 +38,7 @@ export default function WalletPage() {
       <div className="flex items-center justify-between px-6 py-4 border-b">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Mon Portefeuille</h1>
-          <p className="text-sm text-muted-foreground">
-            Suivi de vos revenus et demandes de retrait
-          </p>
+          
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={refresh} title="Actualiser">
@@ -83,9 +54,9 @@ export default function WalletPage() {
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="">
         {/* KPI Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 divide-x">
           <KpiCard
             title="Solde disponible"
             value={wallet ? fmt(wallet.balanceAmount) : "—"}
@@ -155,14 +126,14 @@ export default function WalletPage() {
                           <div
                             className={`flex h-8 w-8 items-center justify-center rounded-full shrink-0 ${
                               isCredit
-                                ? "bg-emerald-500/10"
-                                : "bg-orange-500/10"
+                                ? "bg-primary/10"
+                                : "bg-amber-500/10"
                             }`}
                           >
                             {isCredit ? (
-                              <ArrowUpFromLine className="h-3.5 w-3.5 text-emerald-600" />
+                              <ArrowUpFromLine className="h-3.5 w-3.5 text-primary" />
                             ) : (
-                              <ArrowDownToLine className="h-3.5 w-3.5 text-orange-600" />
+                              <ArrowDownToLine className="h-3.5 w-3.5 text-amber-400" />
                             )}
                           </div>
                           <div>
@@ -179,15 +150,12 @@ export default function WalletPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge
-                            variant="outline"
-                            className={`text-[10px] ${TX_BADGE[tx.type]}`}
-                          >
+                          <StatusBadge tone={TX_TONE[tx.type]} className="text-[10px]">
                             {TX_LABEL[tx.type]}
-                          </Badge>
+                          </StatusBadge>
                           <span
                             className={`font-semibold tabular-nums ${
-                              isCredit ? "text-emerald-600" : "text-orange-600"
+                              isCredit ? "text-primary" : "text-amber-400"
                             }`}
                           >
                             {isCredit ? "+" : "−"}{fmt(tx.amount)}

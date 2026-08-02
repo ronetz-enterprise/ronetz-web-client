@@ -31,7 +31,7 @@ const ConfirmationPage: React.FC = () => {
 
   if (!state) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <p className="text-sm text-muted-foreground">Redirection en cours…</p>
       </div>
     );
@@ -39,7 +39,7 @@ const ConfirmationPage: React.FC = () => {
 
   if (!state.success) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-8 p-6">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-8 p-6 bg-background text-foreground">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
           <XCircle className="h-8 w-8 text-destructive" />
         </div>
@@ -65,7 +65,7 @@ const ConfirmationPage: React.FC = () => {
   const { product, subscription } = state;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-md space-y-6">
         {/* Success icon */}
         <div className="text-center space-y-3">

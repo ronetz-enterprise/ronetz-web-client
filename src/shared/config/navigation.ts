@@ -11,6 +11,7 @@ import {
   Wallet,
   BarChart2,
   WalletCards,
+  KeyRound,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -90,6 +91,12 @@ export const navigationConfig: NavItem[] = [
     title: 'Acheter un forfait',
     href: '/acheter',
     icon: ShoppingBag,
+    roles: ['CLIENT'],
+  },
+  {
+    title: 'Mes Accès',
+    href: '/mes-acces',
+    icon: KeyRound,
     roles: ['CLIENT'],
   },
   {

@@ -10,7 +10,7 @@ const UserListPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between px-5 border-b py-3">
-        <h1 className="text-xl font-semibold text-slate-900 tracking-tight">Gestion Utilisateurs</h1>
+        <h1 className="text-xl font-semibold text-foreground tracking-tight">Gestion Utilisateurs</h1>
         
       </div>
 

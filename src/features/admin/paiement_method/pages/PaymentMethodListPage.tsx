@@ -11,23 +11,25 @@ const PaymentMethodListPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between px-5 border-b py-3">
-        <h1 className="text-xl font-semibold text-slate-900 tracking-tight">Gestion Méthodes de Paiement</h1>
+        <h1 className="text-xl font-semibold text-foreground tracking-tight">Gestion Méthodes de Paiement</h1>
         <PaymentMethodDialog onCreate={createPaymentMethod} />
       </div>
 
       <div className="px-5">
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : paymentMethods.length > 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
              <DataTable columns={columns} data={paymentMethods} />
           </div>
         ) : (
-          <div className="p-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200 space-y-4">
-            <CreditCard size={64} className="mx-auto text-slate-100" />
-            <p className="text-slate-500 font-bold">Aucune méthode de paiement configurée.</p>
+          <div className="p-20 text-center bg-card rounded-lg border border-dashed border-border space-y-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-border mx-auto">
+              <CreditCard className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground font-bold">Aucune méthode de paiement configurée.</p>
           </div>
         )}
       </div>

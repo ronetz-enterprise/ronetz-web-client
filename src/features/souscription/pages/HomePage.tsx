@@ -12,7 +12,7 @@ import { useAuthStore } from '@/shared/store/authStore';
 
 const HomePage: React.FC = () => {
   const { subscriptions, loading: subLoading, refresh: refreshSubs } = useMesSubscriptions();
-  const { tokens, loading: tokLoading, refresh: refreshTokens } = useMyTokens();
+  const { tokens, loading: tokLoading, refresh: refreshTokens, revoke: revokeToken } = useMyTokens();
   const navigate = useNavigate();
   const activeSiteId = useTopologyStore((s) => s.activeSiteId);
   const { user } = useAuthStore();
@@ -40,11 +40,7 @@ const HomePage: React.FC = () => {
           <h1 className="text-xl font-semibold tracking-tight">
             {greeting()}{user?.firstName ? `, ${user.firstName}` : ''} 👋
           </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {activeTokens.length > 0
-              ? `Vous avez ${activeTokens.length} accès WiFi actif${activeTokens.length > 1 ? 's' : ''}`
-              : 'Aucun accès WiFi actif'}
-          </p>
+         
         </div>
         <Button variant="ghost" size="icon" onClick={refresh} title="Actualiser">
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
@@ -56,7 +52,7 @@ const HomePage: React.FC = () => {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold flex items-center gap-2">
-              <KeyRound className="h-4 w-4 text-emerald-500" />
+              <KeyRound className="h-4 w-4 text-primary" />
               Mes identifiants WiFi
             </h2>
             <Button variant="default" size="sm" onClick={() => navigate(buyUrl)}>
@@ -66,12 +62,12 @@ const HomePage: React.FC = () => {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {[1, 2].map(i => <Skeleton key={i} className="h-56 rounded-xl" />)}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+              {[1, 2].map(i => <Skeleton key={i} className="h-36 rounded-lg" />)}
             </div>
           ) : activeTokens.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {activeTokens.map(t => <TokenCredentialCard key={t.id} token={t} />)}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+              {activeTokens.map(t => <TokenCredentialCard key={t.id} token={t} onRevoke={revokeToken} />)}
             </div>
           ) : (
             <div className="rounded-xl border border-dashed p-12 text-center space-y-4">
@@ -96,7 +92,7 @@ const HomePage: React.FC = () => {
         {pending.length > 0 && (
           <section>
             <h2 className="text-sm font-semibold flex items-center gap-2 mb-4">
-              <Clock className="h-4 w-4 text-amber-500" />
+              <Clock className="h-4 w-4 text-(--accent-yellow)" />
               En attente de confirmation ({pending.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

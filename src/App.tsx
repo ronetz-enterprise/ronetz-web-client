@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { ThemeProvider } from '@/components/theme-provider';
 
 // Layouts
 import AuthLayout from '@/shared/layouts/AuthLayout';
@@ -35,7 +36,7 @@ import WalletPage from '@/features/admin_wifi/wallet/pages/WalletPage';
 import ForfaitsAchatPage from '@/features/souscription/pages/ForfaitsAchatPage';
 import PaiementPage from '@/features/souscription/pages/PaiementPage';
 import ConfirmationPage from '@/features/souscription/pages/ConfirmationPage';
-import JetonsPage from '@/features/souscription/pages/JetonsPage';
+import MesAccesPage from '@/features/souscription/pages/MesAccesPage';
 import MesSouscriptionsPage from '@/features/souscription/pages/MesSouscriptionsPage';
 import HomePage from '@/features/souscription/pages/HomePage';
 
@@ -77,6 +78,7 @@ function App() {
   const { user } = useAuthStore();
 
   return (
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
     <BrowserRouter>
       <TooltipProvider>
         <Toaster position="top-center" richColors />
@@ -125,7 +127,7 @@ function App() {
                <Route path="/home" element={<HomePage />} />
                <Route path="/acheter" element={<AcheterRedirect />} />
                <Route path="/acheter/:siteId" element={<ForfaitsAchatPage />} />
-               <Route path="/jetons" element={<JetonsPage />} />
+               <Route path="/mes-acces" element={<MesAccesPage />} />
                <Route path="/souscriptions" element={<MesSouscriptionsPage />} />
             </Route>
 
@@ -152,6 +154,7 @@ function App() {
         </Routes>
       </TooltipProvider>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

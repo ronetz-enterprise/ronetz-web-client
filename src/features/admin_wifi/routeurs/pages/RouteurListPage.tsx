@@ -18,25 +18,25 @@ const RouteurListPage: React.FC = () => {
     rotateSecrets,
   } = useRouteurs();
   const { activeSiteId } = useTopologyStore();
-  console.log("page en cours");
-  console.log(routeurs);
 
   return (
     <div>
       <div className="flex items-center justify-between px-5 border-b py-3">
-        <h1 className="text-xl font-semibold text-slate-900 tracking-tight">Infrastructure WiFi</h1>
+        <h1 className="text-xl font-semibold text-foreground tracking-tight">Infrastructure WiFi</h1>
         <RouteurDialog onCreate={createRouteur} />
       </div>
 
       <div className="">
         {loading ? (
           [1, 2, 3].map(i => (
-            <Card key={i} className="h-16 mb-2 animate-pulse bg-slate-100 border-none rounded-2xl" />
+            <Card key={i} className="h-16 mb-2 animate-pulse bg-muted border-none rounded-lg" />
           ))
         ) : activeSiteId ? (
-          <div className="p-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200 space-y-4">
-            <Wifi size={64} className="mx-auto text-slate-100" />
-            <p className="text-slate-500 font-bold">Sélectionnez un site pour afficher ses routeurs.</p>
+          <div className="p-20 text-center bg-card rounded-lg border border-dashed border-border space-y-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-border mx-auto">
+              <Wifi className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground font-bold">Sélectionnez un site pour afficher ses routeurs.</p>
           </div>
         ) : routeurs.length > 0 ? (
           <RouteurPage
@@ -47,9 +47,11 @@ const RouteurListPage: React.FC = () => {
             onRotateSecrets={rotateSecrets}
           />
         ) : (
-          <div className="p-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200 space-y-4">
-            <Wifi size={64} className="mx-auto text-slate-100" />
-            <p className="text-slate-500 font-bold">Aucun routeur configuré. Commencez par en ajouter un.</p>
+          <div className="p-20 text-center bg-card rounded-lg border border-dashed border-border space-y-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-border mx-auto">
+              <Wifi className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground font-bold">Aucun routeur configuré. Commencez par en ajouter un.</p>
           </div>
         )}
       </div>

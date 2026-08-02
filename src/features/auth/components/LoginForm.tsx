@@ -18,16 +18,16 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Connexion</h1>
+      <div className="flex flex-col gap-1.5">
+        <h2 className="text-2xl font-semibold tracking-tight">Connexion</h2>
         <p className="text-sm text-muted-foreground">
           Entrez vos identifiants pour accéder à votre espace
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Email</Label>
           <Input
             id="email"
             type="email"
@@ -39,8 +39,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Mot de passe</Label>
-            <a href="#" className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4">
+            <Label htmlFor="password" className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Mot de passe</Label>
+            <a href="#" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
               Mot de passe oublié ?
             </a>
           </div>

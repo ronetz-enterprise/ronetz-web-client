@@ -161,32 +161,32 @@ export function ForfaitDialog({ onCreate }: ForfaitDialogProps) {
 
           {/* Sites */}
           <div className="space-y-2">
-            <Label>Sites valides <span className="text-red-500">*</span></Label>
+            <Label>Sites valides <span className="text-destructive">*</span></Label>
             {sitesLoading ? (
-              <div className="flex items-center gap-2 text-sm text-slate-400 py-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
                 <Loader2 size={14} className="animate-spin" />
                 Chargement des sites…
               </div>
             ) : sites.length === 0 ? (
-              <p className="text-sm text-slate-400 py-2">Aucun site disponible.</p>
+              <p className="text-sm text-muted-foreground py-2">Aucun site disponible.</p>
             ) : (
-              <div className="border border-input rounded-md divide-y divide-slate-100 max-h-40 overflow-y-auto">
+              <div className="border border-input rounded-md divide-y divide-border max-h-40 overflow-y-auto">
                 {sites.map((site) => (
                   <label
                     key={site.id}
-                    className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-slate-50 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-muted/50 transition-colors"
                   >
                     <input
                       type="checkbox"
                       checked={siteIds.includes(site.id)}
                       onChange={() => toggleSite(site.id)}
-                      className="h-4 w-4 rounded border-slate-300 accent-slate-900"
+                      className="h-4 w-4 rounded border-border accent-primary"
                     />
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <MapPin size={13} className="text-slate-400 shrink-0" />
-                      <span className="text-sm font-medium text-slate-700 truncate">{site.name}</span>
+                      <MapPin size={13} className="text-muted-foreground shrink-0" />
+                      <span className="text-sm font-medium text-foreground truncate">{site.name}</span>
                       {site.address && (
-                        <span className="text-xs text-slate-400 truncate">{site.address}</span>
+                        <span className="text-xs text-muted-foreground truncate">{site.address}</span>
                       )}
                     </div>
                   </label>
@@ -194,7 +194,7 @@ export function ForfaitDialog({ onCreate }: ForfaitDialogProps) {
               </div>
             )}
             {siteIds.length > 0 && (
-              <p className="text-xs text-slate-500">{siteIds.length} site{siteIds.length > 1 ? 's' : ''} sélectionné{siteIds.length > 1 ? 's' : ''}</p>
+              <p className="text-xs text-muted-foreground">{siteIds.length} site{siteIds.length > 1 ? 's' : ''} sélectionné{siteIds.length > 1 ? 's' : ''}</p>
             )}
           </div>
 

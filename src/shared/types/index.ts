@@ -103,6 +103,7 @@ export interface TokenDto {
   id: string;
   subscriptionId: string;
   siteId: string;
+  siteName:string;
   username: string;
   passwordClear: string | null;
   durationMinutes: number;
@@ -111,6 +112,27 @@ export interface TokenDto {
   status: TokenStatus;
   issuedAt: string;
   expiresAt: string;
+}
+
+// SessionSummaryDto / TokenUsageDto mirror backend bc-access-sessions RADIUS accounting
+export interface SessionSummaryDto {
+  startedAt: string;
+  endedAt: string | null;
+  bytesUsed: number;
+  terminateCause: string | null;
+  nasIp: string | null;
+}
+
+export interface TokenUsageDto {
+  tokenId: string;
+  consumedBytes: number;
+  limitBytes: number | null;
+  percentUsed: number | null;
+  activeDeviceCount: number;
+  lastTerminateCause: string | null;
+  expiresAt: string;
+  remainingSeconds: number;
+  recentSessions: SessionSummaryDto[];
 }
 
 // PaymentDto mirrors backend bc-payments Payment
@@ -217,6 +239,10 @@ export function formatData(mb: number): string {
     return `${Number.isInteger(gb) ? gb : gb.toFixed(1)} Go`;
   }
   return `${mb} Mo`;
+}
+
+export function formatBytes(bytes: number): string {
+  return formatData(bytes / (1024 * 1024));
 }
 
 export function formatAmount(amount: number, currency: string): string {

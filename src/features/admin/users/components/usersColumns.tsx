@@ -4,6 +4,7 @@ import { type UserDetails } from "@/shared/types";
 import { MoreHorizontal, Shield, UserX, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/shared/components/StatusBadge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -100,7 +101,7 @@ export const getUsersColumns = (actions: UserTableActions): ColumnDef<UserDetail
       const fn = row.original.firstName;
       const ln = row.original.lastName;
       const label = [fn, ln].filter(Boolean).join(" ") || "—";
-      return <span className="text-slate-700">{label}</span>;
+      return <span className="text-foreground">{label}</span>;
     },
   },
   {
@@ -123,9 +124,9 @@ export const getUsersColumns = (actions: UserTableActions): ColumnDef<UserDetail
     cell: ({ row }) => {
       const active = row.original.active;
       return (
-        <Badge variant={active ? "default" : "destructive"} className="font-medium">
+        <StatusBadge tone={active ? "success" : "danger"}>
           {active ? "Actif" : "Bloqué"}
-        </Badge>
+        </StatusBadge>
       );
     },
   },
@@ -149,7 +150,7 @@ export const getUsersColumns = (actions: UserTableActions): ColumnDef<UserDetail
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 rounded-lg text-slate-500 hover:text-slate-900"
+                className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground"
                 disabled={!actions.currentUserId}
               >
                 <MoreHorizontal className="h-4 w-4" />

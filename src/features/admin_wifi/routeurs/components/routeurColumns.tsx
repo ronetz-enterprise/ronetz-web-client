@@ -2,12 +2,13 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { type Routeur } from "@/shared/types";
 import { Button } from "@/components/ui/button";
 import { Download, Edit, Trash2, Power, RefreshCw, Network } from "lucide-react";
+import { StatusBadge, type StatusBadgeTone } from "@/shared/components/StatusBadge";
 
-const statutStyle: Record<Routeur["status"], string> = {
-    ACTIVE: "bg-emerald-100 text-emerald-700",
-    PROVISIONED: "bg-amber-100 text-amber-700",
-    OFFLINE: "bg-red-100 text-red-600",
-    DECOMMISSIONED: "bg-slate-100 text-slate-500",
+const statutTone: Record<Routeur["status"], StatusBadgeTone> = {
+    ACTIVE: "success",
+    PROVISIONED: "warning",
+    OFFLINE: "danger",
+    DECOMMISSIONED: "neutral",
 };
 
 const statutLabel: Record<Routeur["status"], string> = {
@@ -41,9 +42,9 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
             cell: ({ row }) => {
                 const statut = row.getValue<Routeur["status"]>("status");
                 return (
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${statutStyle[statut]}`}>
+                    <StatusBadge tone={statutTone[statut]}>
                         {statutLabel[statut]}
-                    </span>
+                    </StatusBadge>
                 );
             },
         },
@@ -52,7 +53,7 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
             header: "Dernière connexion",
             cell: ({ row }) => {
                 const val = row.getValue<string | null>("lastHeartbeatAt");
-                if (!val) return <span className="text-slate-400">—</span>;
+                if (!val) return <span className="text-muted-foreground">—</span>;
                 return new Date(val).toLocaleString("fr-FR");
             },
         },
@@ -70,7 +71,7 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
                                 size="icon"
                                 onClick={() => actions.onActivate?.(r.id)}
                                 title="Activer"
-                                className="h-9 w-9 text-amber-500 hover:text-green-600 hover:bg-green-50 rounded-xl"
+                                className="h-9 w-9 text-amber-400 hover:text-primary hover:bg-primary/10 rounded-xl"
                             >
                                 <Power size={16} />
                             </Button>
@@ -86,7 +87,7 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
                                     }
                                 }}
                                 title="Rotation des secrets"
-                                className="h-9 w-9 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-xl"
+                                className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl"
                             >
                                 <RefreshCw size={16} />
                             </Button>
@@ -98,7 +99,7 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
                                 size="icon"
                                 onClick={() => actions.onDownloadConfig(r.id, r.name)}
                                 title="Télécharger la config"
-                                className="h-9 w-9 text-slate-400 hover:text-primary rounded-xl hover:bg-slate-50"
+                                className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl"
                             >
                                 <Download size={16} />
                             </Button>
@@ -110,7 +111,7 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
                                 size="icon"
                                 onClick={() => navigator.clipboard.writeText(r.vpnPublicKey!)}
                                 title="Copier la clé publique VPN"
-                                className="h-9 w-9 text-slate-400 hover:text-slate-600 rounded-xl"
+                                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl"
                             >
                                 <Network size={16} />
                             </Button>
@@ -122,7 +123,7 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
                                 size="icon"
                                 onClick={() => actions.onEdit?.(r)}
                                 title="Modifier"
-                                className="h-9 w-9 text-slate-400 hover:text-slate-600 rounded-xl"
+                                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl"
                             >
                                 <Edit size={16} />
                             </Button>
@@ -134,7 +135,7 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
                                 size="icon"
                                 onClick={() => actions.onDelete(r.id)}
                                 title="Supprimer"
-                                className="h-9 w-9 text-slate-400 hover:text-red-500 rounded-xl"
+                                className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
                             >
                                 <Trash2 size={16} />
                             </Button>

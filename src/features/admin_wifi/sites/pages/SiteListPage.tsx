@@ -29,7 +29,7 @@ const SiteListPage: React.FC = () => {
           <SitePage sites={sites} />
         ) : (
           <div className="py-20 text-center space-y-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md border bg-muted mx-auto">
+            <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-border mx-auto">
               <MapPin className="h-5 w-5 text-muted-foreground" />
             </div>
             <p className="text-sm text-muted-foreground">Aucun site pour ce domaine.</p>

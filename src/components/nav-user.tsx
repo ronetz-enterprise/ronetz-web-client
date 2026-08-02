@@ -5,7 +5,9 @@ import {
     ChevronsUpDown,
     CreditCard,
     LogOut,
+    Moon,
     Sparkles,
+    Sun,
 } from "lucide-react"
 
 import {
@@ -29,6 +31,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/shared/store/authStore"
+import { useTheme } from "@/components/theme-provider"
 import { useNavigate } from "react-router-dom"
 
 export function NavUser({
@@ -42,6 +45,8 @@ export function NavUser({
 }) {
     const { isMobile } = useSidebar()
     const { logout } = useAuthStore()
+    const { theme, setTheme } = useTheme()
+    const isDark = theme === "dark"
     const navigate = useNavigate()
 
     return (
@@ -104,6 +109,11 @@ export function NavUser({
                                 Notifications
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setTheme(isDark ? "light" : "dark")}>
+                            {isDark ? <Sun /> : <Moon />}
+                            {isDark ? "Thème clair" : "Thème sombre"}
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => { logout(); navigate('/login'); }}>
                             <LogOut />

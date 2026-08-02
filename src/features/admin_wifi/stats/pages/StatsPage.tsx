@@ -10,43 +10,16 @@ import {
 } from "@/components/ui/chart";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatAmount } from "@/shared/types";
 import { useDashboardStats } from "../hooks/useDashboardStats";
+import { KpiCard } from "@/shared/components/KpiCard";
+import { StatusBadge } from "@/shared/components/StatusBadge";
 
 const salesChartConfig = {
-  count:   { label: "Ventes",  color: "var(--chart-1)" },
-  revenue: { label: "Revenu",  color: "var(--chart-2)" },
+  count: { label: "Ventes", color: "var(--chart-1)" },
+  revenue: { label: "Revenu", color: "var(--chart-2)" },
 } satisfies ChartConfig;
-
-function KpiCard({
-  title, value, subtitle, icon: Icon, loading,
-}: {
-  title: string; value: string; subtitle?: string;
-  icon: React.ElementType; loading: boolean;
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-          <Icon className="h-4 w-4 text-primary" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <Skeleton className="h-8 w-32 mt-1" />
-        ) : (
-          <>
-            <p className="text-2xl font-bold tracking-tight">{value}</p>
-            {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
 
 export default function StatsPage() {
   const { stats, loading, refresh } = useDashboardStats();
@@ -72,20 +45,19 @@ export default function StatsPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Tableau de bord</h1>
-          <p className="text-sm text-muted-foreground">Statistiques des 30 derniers jours</p>
+          <h1 className="text-xl font-semibold tracking-tight">Statistiques</h1>
         </div>
         <Button variant="ghost" size="icon" onClick={refresh} title="Actualiser">
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
         </Button>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className=" divide-y">
 
         {/* KPI Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 divide-x ">
           <KpiCard title="Revenus (30j)" value={stats ? fmt(stats.revenue30d) : "—"}
-            subtitle="Total encaissé" icon={Banknote} loading={loading} />
+            subtitle="Total encaissé" icon={Banknote} loading={loading}  />
           <KpiCard title="Forfaits vendus" value={stats ? `${stats.subscriptions30d}` : "—"}
             subtitle="Achats validés" icon={ShoppingBag} loading={loading} />
           <KpiCard title="Abonnements actifs" value={stats ? `${stats.activeSubscriptions}` : "—"}
@@ -94,121 +66,127 @@ export default function StatsPage() {
             subtitle="Par transaction" icon={TrendingUp} loading={loading} />
         </div>
 
-        {/* Main chart — forfaits les mieux vendus */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Forfaits les mieux vendus</CardTitle>
-            <CardDescription>Ventes et revenus par forfait — 30 derniers jours</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-64 w-full rounded-lg" />
-            ) : !chartData.length ? (
-              <div className="h-64 flex items-center justify-center text-sm text-muted-foreground">
-                Aucune vente sur la période
-              </div>
-            ) : (
-              <ChartContainer config={salesChartConfig}>
-                <BarChart accessibilityLayer data={chartData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                  <YAxis tickLine={false} axisLine={false} width={40} />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        formatter={(value, name, item) => {
-                          if (name === "revenue") {
-                            return [
-                              fmt(item.payload.revenue * 1000),
-                              salesChartConfig.revenue.label,
-                            ];
-                          }
-                          return [String(value), salesChartConfig.count.label];
-                        }}
-                        labelFormatter={(_, payload) => payload[0]?.payload?.fullName ?? ""}
-                      />
-                    }
-                  />
-                  <ChartLegend content={<ChartLegendContent />} />
-                  <Bar
-                    dataKey="count"
-                    stackId="a"
-                    fill="var(--color-count)"
-                    radius={[0, 0, 4, 4]}
-                  />
-                  <Bar
-                    dataKey="revenue"
-                    stackId="a"
-                    fill="var(--color-revenue)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
-            )}
-          </CardContent>
-          {topProduct && !loading && (
-            <CardFooter className="flex-col items-start gap-2 text-sm">
-              <div className="flex gap-2 leading-none font-medium">
-                Meilleur forfait : {topProduct.productName}
-                <TrendingUp className="h-4 w-4" />
-              </div>
-              <div className="leading-none text-muted-foreground">
-                {topProduct.count} vente{topProduct.count > 1 ? "s" : ""} · {fmt(topProduct.revenue)}
-              </div>
-            </CardFooter>
-          )}
-        </Card>
+        <div className="flex max-h-[400px] divide-x">
 
-        {/* Recent sales */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold">Derniers achats</CardTitle>
-            <CardDescription className="text-xs">10 transactions les plus récentes</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            {loading ? (
-              <div className="p-4 space-y-2">
-                {Array.from({ length: 5 }, (_, i) => <Skeleton key={i} className="h-10 rounded-md" />)}
-              </div>
-            ) : !stats?.recentSales.length ? (
-              <div className="py-12 text-center text-sm text-muted-foreground">
-                Aucun achat sur les 30 derniers jours
-              </div>
-            ) : (
-              <div className="divide-y">
-                {stats.recentSales.map((sale, i) => {
-                  const date = new Date(sale.paidAt);
-                  return (
-                    <div key={i} className="flex items-center justify-between px-6 py-3 text-sm hover:bg-muted/30 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 shrink-0">
-                          <ShoppingBag className="h-3.5 w-3.5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium leading-none">{sale.productName}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {date.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-                          Payé
-                        </Badge>
-                        <span className="font-semibold tabular-nums">{fmt(sale.amount)}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+          {/* Main chart — forfaits les mieux vendus */}
+          <Card className="ring-0 flex-1 rounded-none bg-transparent">
+            <CardHeader>
+              <CardTitle>Forfaits les mieux vendus</CardTitle>
+              <CardDescription>Ventes et revenus par forfait — 30 derniers jours</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-64 w-full rounded-lg" />
+              ) : !chartData.length ? (
+                <div className="h-64 flex items-center justify-center text-sm text-muted-foreground">
+                  Aucune vente sur la période
+                </div>
+              ) : (
+                <ChartContainer config={salesChartConfig}>
+                  <BarChart accessibilityLayer data={chartData}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="name"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                    />
+                    <YAxis tickLine={false} axisLine={false} width={40} />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          formatter={(value, name, item) => {
+                            if (name === "revenue") {
+                              return [
+                                fmt(item.payload.revenue * 1000),
+                                salesChartConfig.revenue.label,
+                              ];
+                            }
+                            return [String(value), salesChartConfig.count.label];
+                          }}
+                          labelFormatter={(_, payload) => payload[0]?.payload?.fullName ?? ""}
+                        />
+                      }
+                    />
+                    <ChartLegend content={<ChartLegendContent />} />
+                    <Bar
+                      dataKey="count"
+                      stackId="a"
+                      fill="var(--color-count)"
+                      radius={[0, 0, 4, 4]}
+                    />
+                    <Bar
+                      dataKey="revenue"
+                      stackId="a"
+                      fill="var(--color-revenue)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              )}
+            </CardContent>
+            {topProduct && !loading && (
+              <CardFooter className="flex-col items-start gap-2 text-sm">
+                <div className="flex gap-2 leading-none font-medium">
+                  Meilleur forfait : {topProduct.productName}
+                  <TrendingUp className="h-4 w-4" />
+                </div>
+                <div className="leading-none text-muted-foreground">
+                  {topProduct.count} vente{topProduct.count > 1 ? "s" : ""} · {fmt(topProduct.revenue)}
+                </div>
+              </CardFooter>
             )}
-          </CardContent>
-        </Card>
+          </Card>
+
+          {/* Recent sales */}
+          <Card className="ring-0 w-[320px] shrink-0 rounded-none bg-transparent">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">Derniers achats</CardTitle>
+              <CardDescription className="text-xs">10 transactions les plus récentes</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              {loading ? (
+                <div className="p-4 space-y-2">
+                  {Array.from({ length: 5 }, (_, i) => <Skeleton key={i} className="h-10 rounded-md" />)}
+                </div>
+              ) : !stats?.recentSales.length ? (
+                <div className="py-12 text-center text-sm text-muted-foreground">
+                  Aucun achat sur les 30 derniers jours
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {stats.recentSales.map((sale, i) => {
+                    const date = new Date(sale.paidAt);
+                    return (
+                      <div key={i} className="flex items-center justify-between px-6 py-3 text-sm hover:bg-muted/30 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 shrink-0">
+                            <ShoppingBag className="h-3.5 w-3.5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium leading-none">{sale.productName}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {date.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <StatusBadge tone="success" className="text-[10px]">
+                            Payé
+                          </StatusBadge>
+                          <span className="font-semibold tabular-nums">{fmt(sale.amount)}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+        </div>
+
+
 
       </div>
     </div>
