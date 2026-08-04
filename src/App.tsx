@@ -11,49 +11,44 @@ import PageLayout from '@/shared/layouts/pageLayout';
 // Components
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 
-// Auth Module
-import LoginPage from '@/features/auth/pages/LoginPage';
-import RegisterPage from '@/features/auth/pages/RegisterPage';
-// import PasswordResetPage from '@/modules/auth/pages/PasswordResetPage';
+// Auth (bc-iam)
+import LoginPage from '@/pages/auth/LoginPage';
+import RegisterPage from '@/pages/auth/RegisterPage';
 
-// Site Module
-import SiteListPage from '@/features/admin_wifi/sites/pages/SiteListPage';
-import WifiDomainSetupPage from '@/features/admin_wifi/sites/pages/WifiDomainSetupPage';
+// Network Ops (bc-network-ops)
+import SiteListPage from '@/pages/admin-wifi/SiteListPage';
+import WifiDomainSetupPage from '@/pages/admin-wifi/WifiDomainSetupPage';
+import RouteurListPage from '@/pages/admin-wifi/RouteurListPage';
 
-// Routeur Module
-import RouteurListPage from '@/features/admin_wifi/routeurs/pages/RouteurListPage';
+// Commerce (bc-commerce)
+import ForfaitListPage from '@/pages/admin-wifi/ForfaitListPage';
+import StatsPage from '@/pages/admin-wifi/StatsPage';
 
-// Forfait Module
-import ForfaitListPage from '@/features/admin_wifi/products/pages/ForfaitListPage';
+// Wallet (bc-wallet)
+import WalletPage from '@/pages/admin-wifi/WalletPage';
 
-// Stats Module
-import StatsPage from '@/features/admin_wifi/stats/pages/StatsPage';
+// Souscription (agrégation commerce + payments + access-sessions)
+import ForfaitsAchatPage from '@/pages/souscription/ForfaitsAchatPage';
+import PaiementPage from '@/pages/souscription/PaiementPage';
+import ConfirmationPage from '@/pages/souscription/ConfirmationPage';
+import MesAccesPage from '@/pages/souscription/MesAccesPage';
+import MesSouscriptionsPage from '@/pages/souscription/MesSouscriptionsPage';
+import HomePage from '@/pages/souscription/HomePage';
 
-// Wallet Module
-import WalletPage from '@/features/admin_wifi/wallet/pages/WalletPage';
+// IAM (bc-iam) — users + profile
+import UserListPage from '@/pages/admin/UserListPage';
+import ProfilePage from '@/pages/account/ProfilePage';
 
-// Souscription Module
-import ForfaitsAchatPage from '@/features/souscription/pages/ForfaitsAchatPage';
-import PaiementPage from '@/features/souscription/pages/PaiementPage';
-import ConfirmationPage from '@/features/souscription/pages/ConfirmationPage';
-import MesAccesPage from '@/features/souscription/pages/MesAccesPage';
-import MesSouscriptionsPage from '@/features/souscription/pages/MesSouscriptionsPage';
-import HomePage from '@/features/souscription/pages/HomePage';
+// Analytics & Audit (bc-analytics-audit)
+import LogListPage from '@/pages/admin/LogListPage';
 
-// User Module
-import UserListPage from '@/features/admin/users/pages/UserListPage';
-import ProfilePage from '@/features/admin/users/pages/ProfilePage';
-
-// Log Module
-import LogListPage from '@/features/admin/log/pages/LogListPage';
-
-// Admin Module - Localization
-import CountryListPage from '@/features/admin/countries/pages/CountryListPage';
-import PaymentMethodListPage from '@/features/admin/paiement_method/pages/PaymentMethodListPage';
+// Master Data & Payments
+import CountryListPage from '@/pages/admin/CountryListPage';
+import PaymentMethodListPage from '@/pages/admin/PaymentMethodListPage';
 
 // Store
-import { useAuthStore } from '@/shared/store/authStore';
-import { useTopologyStore } from '@/shared/store/topologyStore';
+import { useAuthStore } from '@/modules/auth/store/authStore';
+import { useTopologyStore } from '@/modules/network-ops/store/topologyStore';
 // Helper to allow nested protected routes
 import { Outlet } from 'react-router-dom';
 function OutletProxy() {

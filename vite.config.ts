@@ -46,4 +46,9 @@ export default defineConfig({
       plugins: [esToolkitCompatEsbuildPlugin],
     },
   },
+  server:{
+    allowedHosts:[
+      "borax-stupor-refract.ngrok-free.dev",
+    ]
+  }
 })

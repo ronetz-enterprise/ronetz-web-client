@@ -30,7 +30,7 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { useAuthStore } from "@/shared/store/authStore"
+import { useAuthStore } from "@/modules/auth/store/authStore"
 import { useTheme } from "@/components/theme-provider"
 import { useNavigate } from "react-router-dom"
 

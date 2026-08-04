@@ -23,7 +23,7 @@ export default function Page() {
 
                     </div>
                 </header>
-                <main className="m-1.5 sm:m-3 sm:mt-0  mt-0 bg-background border rounded-md overflow-y-auto  h-[calc(100vh-60px)]">
+                <main className="m-1.5 sm:m-3 sm:mt-0  mt-0 bg-background border rounded-none overflow-y-auto  h-[calc(100vh-60px)]">
                     <Outlet />
 
                 </main>

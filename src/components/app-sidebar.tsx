@@ -11,7 +11,7 @@ import {
     SidebarFooter,
     SidebarHeader,
 } from "@/components/ui/sidebar"
-import { useAuthStore } from "@/shared/store/authStore"
+import { useAuthStore } from "@/modules/auth/store/authStore"
 import { navigationConfig } from "@/shared/config/navigation"
 import { NavMain } from "./nav-main"
 

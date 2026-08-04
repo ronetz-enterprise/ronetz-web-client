@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '@/modules/auth/store/authStore';
 import { navigationConfig } from '../config/navigation';
 import { 
   LogOut, 
@@ -93,7 +93,7 @@ const SidebarLayout: React.FC = () => {
             <div className="w-10 h-10 rounded-full bg-slate-200"></div>
           </header>
           
-          <div className="flex-1 p-8 md:p-12 overflow-y-auto">
+          <div className="flex-1 p-8 md:p-12 overflow-y-auto ">
              <div className="max-w-7xl mx-auto">
                 <Outlet />
              </div>
