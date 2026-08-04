@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useRegister } from '@/modules/auth/hooks/useRegister';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCountriesLookup } from '@/modules/master-data/hooks/useCountriesLookup';
@@ -16,25 +17,23 @@ const RegisterPage: React.FC = () => {
   const { register: registerUser, isLoading } = useRegister();
   const { countries, isLoading: isCountriesLoading, error: countriesError } = useCountriesLookup();
   const macAddress = useMacAddress();
-  const { register, handleSubmit, setValue } = useForm<SignInRequest>();
+  const { register, handleSubmit, control } = useForm<SignInRequest>();
 
+  // Indicatif du pays sélectionné (ex. "237"), affiché à côté du champ
+  // téléphone. Le champ lui-même ne contient que le numéro local : c'est en
+  // combinant les deux au submit qu'on garantit un numéro E.164 valide,
+  // même si l'utilisateur modifie le numéro après avoir choisi son pays.
   const [dialCode, setDialCode] = useState<string>('');
 
-  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const code = e.target.value;
-    setValue('countryIsoCode', code);
+  const handleCountryChange = (code: string) => {
     const selected = countries.find((c: Country) => c.code === code);
-    const newDialCode = selected?.dialCode ?? '';
-    setDialCode(newDialCode);
-    if (newDialCode) {
-      setValue('phoneNumber', '+' + newDialCode);
-    } else {
-      setValue('phoneNumber', '');
-    }
+    setDialCode(selected?.dialCode ?? '');
   };
 
   const onSubmit = (data: SignInRequest) => {
-    registerUser({ ...data, userMacAddress: macAddress });
+    const localDigits = data.phoneNumber.replace(/\D/g, '').replace(/^0+/, '');
+    const phoneNumber = dialCode ? `+${dialCode}${localDigits}` : data.phoneNumber;
+    registerUser({ ...data, phoneNumber, userMacAddress: macAddress });
   };
 
   return (
@@ -79,31 +78,45 @@ const RegisterPage: React.FC = () => {
             </p>
           )}
           <div className="flex gap-2">
-            <select
-              {...register("countryIsoCode", { required: "Pays requis" })}
-              onChange={handleCountryChange}
-              className="w-1/3 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors focus:outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              <option value="">Pays</option>
-              {countries
-                .filter((c: Country) => c.active)
-                .map((c: Country) => (
-                  <option key={c.id} value={c.code}>
-                    {c.dialCode ? `+${c.dialCode} ` : ''}{c.name}
-                  </option>
-                ))}
-            </select>
-            <div className="relative flex-1">
+            <Controller
+              control={control}
+              name="countryIsoCode"
+              rules={{ required: "Pays requis" }}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    handleCountryChange(value);
+                  }}
+                  disabled={isCountriesLoading}
+                >
+                  <SelectTrigger className="w-2/5">
+                    <SelectValue placeholder="Pays" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries
+                      .filter((c: Country) => c.active)
+                      .map((c: Country) => (
+                        <SelectItem key={c.id} value={c.code}>
+                          {c.dialCode ? `+${c.dialCode} ` : ''}{c.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            <div className={cn("flex flex-1", dialCode && "items-stretch")}>
               {dialCode && (
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none select-none">
+                <span className="inline-flex items-center rounded-l-lg border border-r-0 border-input bg-muted px-2.5 text-sm text-muted-foreground">
                   +{dialCode}
                 </span>
               )}
               <Input
                 id="phone"
                 type="tel"
-                placeholder={dialCode ? '' : '6xx xx xx xx'}
-                className={cn(dialCode ? 'pl-12' : '')}
+                placeholder="6xx xx xx xx"
+                className={cn("flex-1", dialCode && "rounded-l-none")}
                 {...register("phoneNumber", { required: "Téléphone requis" })}
               />
             </div>
