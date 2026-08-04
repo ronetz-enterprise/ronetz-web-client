@@ -21,7 +21,7 @@ export const InternetPlanCard: React.FC<ForfaitCardProps> = ({ forfait, selected
     <div
       onClick={() => onSelect?.(forfait)}
       className={cn(
-        "group relative w-full overflow-hidden bg-card cursor-pointer  border",
+        "group relative w-full overflow-hidden bg-card cursor-pointer rounded-lg border ",
         "transition-all duration-300 ease-out",
         "hover:z-10 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-sm",
         selected && "border-primary/40",
