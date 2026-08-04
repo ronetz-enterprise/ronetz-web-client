@@ -1,6 +1,5 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Wifi } from 'lucide-react';
 
 const AuthLayout: React.FC = () => {
   return (

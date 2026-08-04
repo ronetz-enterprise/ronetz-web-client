@@ -3,7 +3,7 @@ import { Tag, Edit, Trash2, Clock, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import type { Forfait } from '../types';
-import { formatAmount, formatData, formatDuration } from '@/shared/lib/format';
+import { formatData, formatDuration } from '@/shared/lib/format';
 
 interface ForfaitCardProps {
   forfait: Forfait;

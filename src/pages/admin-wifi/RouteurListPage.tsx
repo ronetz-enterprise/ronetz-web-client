@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouteurs } from '@/modules/network-ops/hooks/useRouteurs';
-import { RouteurTable } from '@/modules/network-ops/components/RouteurTable';
 import { RouteurDialog } from '@/modules/network-ops/components/RouteurDialog';
 import { Wifi } from 'lucide-react';
 import { Card } from '@/components/ui/card';

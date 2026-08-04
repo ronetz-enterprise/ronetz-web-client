@@ -16,7 +16,7 @@ const RegisterPage: React.FC = () => {
   const { register: registerUser, isLoading } = useRegister();
   const { countries, isLoading: isCountriesLoading, error: countriesError } = useCountriesLookup();
   const macAddress = useMacAddress();
-  const { register, handleSubmit, setValue, watch } = useForm<SignInRequest>();
+  const { register, handleSubmit, setValue } = useForm<SignInRequest>();
 
   const [dialCode, setDialCode] = useState<string>('');
 

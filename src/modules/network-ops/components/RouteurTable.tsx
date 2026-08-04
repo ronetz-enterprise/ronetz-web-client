@@ -5,7 +5,6 @@ import {
   Edit,
   Trash2,
   CheckCircle2,
-  AlertCircle,
   WifiOff,
   Power,
   RefreshCw,

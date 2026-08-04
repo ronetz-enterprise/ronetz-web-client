@@ -1,7 +1,7 @@
 // components/payment/steps/ConfirmationStep.tsx
 import React from 'react';
 import { Check, CreditCard, Smartphone } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
+import { formatData, formatDuration } from '@/shared/lib/format';
 import type { Forfait, PaymentProvider } from '../types';
 
 interface ConfirmationStepProps {
@@ -44,7 +44,7 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
           <div className="ml-8 space-y-1">
             <p className="font-semibold">{forfait.name}</p>
             <p className="text-sm text-muted-foreground">
-              {fmt(forfait.dataGb)} Go • {fmt(forfait.durationHours)}h • {forfait.maxDevices} appareils
+              {formatData(forfait.dataVolumeMb)} • {formatDuration(forfait.durationMinutes)} • {forfait.maxConcurrentDevices} appareils
             </p>
           </div>
         </div>

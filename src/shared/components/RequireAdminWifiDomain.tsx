@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '@/modules/iam/store/authStore';
+import { useAuthStore } from '@/modules/auth/store/authStore';
 
 /**
  * ADMIN_WIFI must have a domain configured before accessing sites / routeurs / forfaits.

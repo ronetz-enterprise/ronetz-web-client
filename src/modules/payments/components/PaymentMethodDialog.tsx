@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Loader2, Check } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import type { PaymentMethod } from '../types';
 import type { Country } from '@/modules/master-data/types';
 import { countryApi } from '@/modules/master-data/api/countryApi';
@@ -100,7 +100,7 @@ export function PaymentMethodDialog({ onCreate }: PaymentMethodDialogProps) {
                       htmlFor={`country-${country.id}`}
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      {country.name} ({country.isoCode})
+                      {country.name} ({country.code})
                     </label>
                   </div>
                 ))}

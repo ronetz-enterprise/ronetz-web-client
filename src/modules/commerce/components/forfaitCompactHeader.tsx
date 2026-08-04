@@ -1,4 +1,5 @@
 import { cn } from "@/shared/lib/utils";
+import { formatData, formatDuration } from "@/shared/lib/format";
 import type { Forfait } from "../types";
 import { Box, Clock, Smartphone, Wifi, type LucideIcon } from "lucide-react";
 
@@ -12,25 +13,20 @@ interface ForfaitFeatureConfig {
 const FORFAIT_FEATURES: ForfaitFeatureConfig[] = [
   {
     icon: Wifi,
-    getValue: (f) => `${new Intl.NumberFormat("fr-FR").format(f.dataGb)} Go`,
-    isUnlimited: (f) => f.dataGb === -1 || f.dataGb === Infinity,
+    getValue: (f) => formatData(f.dataVolumeMb),
+    isUnlimited: (f) => f.dataVolumeMb === -1 || f.dataVolumeMb === Infinity,
     unlimitedLabel: "Illimité"
   },
   {
     icon: Clock,
-    getValue: (f) => {
-      const fmt = new Intl.NumberFormat("fr-FR").format(f.durationHours);
-      if (f.durationHours >= 720) return `${Math.floor(f.durationHours / 720)} mois`;
-      if (f.durationHours >= 24) return `${Math.floor(f.durationHours / 24)} jours`;
-      return `${fmt}h`;
-    },
-    isUnlimited: (f) => f.durationHours === -1 || f.durationHours === Infinity,
+    getValue: (f) => formatDuration(f.durationMinutes),
+    isUnlimited: (f) => f.durationMinutes === -1 || f.durationMinutes === Infinity,
     unlimitedLabel: "Sans limite"
   },
   {
     icon: Smartphone,
-    getValue: (f) => `${f.maxDevices}`,
-    isUnlimited: (f) => f.maxDevices === -1 || f.maxDevices === Infinity,
+    getValue: (f) => `${f.maxConcurrentDevices}`,
+    isUnlimited: (f) => f.maxConcurrentDevices === -1 || f.maxConcurrentDevices === Infinity,
     unlimitedLabel: "∞"
   }
 ];

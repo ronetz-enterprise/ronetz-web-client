@@ -6,13 +6,12 @@ export const useDomains = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
 
-  const checkDomain = useCallback(async (signal?: AbortSignal) => {
+  const checkDomain = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await siteApi.checkTenantHasDomain();
-
+      await siteApi.checkTenantHasDomain();
 
       setExist(true);
     } catch (err) {
@@ -28,13 +27,7 @@ export const useDomains = () => {
   }, []);
 
   useEffect(() => {
-    const controller = new AbortController();
-
-    checkDomain(controller.signal);
-
-    return () => {
-      controller.abort();
-    };
+    checkDomain();
   }, [checkDomain]);
 
   return {
