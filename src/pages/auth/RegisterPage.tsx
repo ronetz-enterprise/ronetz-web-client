@@ -17,7 +17,9 @@ const RegisterPage: React.FC = () => {
   const { register: registerUser, isLoading } = useRegister();
   const { countries, isLoading: isCountriesLoading, error: countriesError } = useCountriesLookup();
   const macAddress = useMacAddress();
-  const { register, handleSubmit, control } = useForm<SignInRequest>();
+  const { register, handleSubmit, control } = useForm<SignInRequest>({
+    defaultValues: { countryIsoCode: '' },
+  });
 
   // Indicatif du pays sélectionné (ex. "237"), affiché à côté du champ
   // téléphone. Le champ lui-même ne contient que le numéro local : c'est en
