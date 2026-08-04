@@ -1,8 +1,7 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from "path"
-import type { Plugin } from 'rolldown'
 
 // When Vite pre-bundles recharts it encounters es-toolkit/compat/* sub-paths
 // (e.g. es-toolkit/compat/get). Those sub-paths resolve to CJS wrapper files
@@ -15,6 +14,7 @@ import type { Plugin } from 'rolldown'
 // The main compat bundle has no CJS and no naming collision.
 const esToolkitCompatShimPlugin: Plugin = {
   name: 'es-toolkit-compat-shim',
+  enforce: 'pre',
   resolveId(source) {
     if (/^es-toolkit\/compat\/.+/.test(source)) {
       return { id: `\0es-toolkit-compat-shim:${source}` }
@@ -30,7 +30,9 @@ const esToolkitCompatShimPlugin: Plugin = {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  // Registered at the top level so it also runs during the production build
+  // (optimizeDeps only pre-bundles for the dev server, not `vite build`).
+  plugins: [react(), tailwindcss(), esToolkitCompatShimPlugin],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
