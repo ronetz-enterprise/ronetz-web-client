@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase-oss/ui-core": "^7.0.3",
+    "@firebase-oss/ui-react": "^7.0.3",
+    "@firebase-oss/ui-styles": "^7.0.3",
     "@fontsource-variable/geist": "^5.2.8",
     "@fontsource-variable/manrope": "^5.3.0",
     "@radix-ui/react-separator": "^1.1.8",
@@ -19,6 +22,7 @@
     "axios": "^1.13.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "firebase": "^12.17.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.7.0",
     "radix-ui": "^1.4.3",

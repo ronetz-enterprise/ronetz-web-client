@@ -1,23 +1,10 @@
-import api from "@/core/api/axiosConfig";
-import type { AuthResponse, LoginRequest, SignInRequest } from "../../auth/types";
+import type { AuthProvider } from "./authProvider";
+import { firebaseAuthProvider } from "./firebaseAuthProvider";
 
-export const authApi = {
-  login: (credentials: LoginRequest) =>
-    api.post<AuthResponse>("/auth/login", {
-      email: credentials.email,
-      password: credentials.password,
-    }),
-
-  refresh: (refreshToken: string) =>
-    api.post<AuthResponse>("/auth/refresh", { refreshToken }),
-
-  register: (data: SignInRequest) =>
-    api.post<{ id: string; email: string; role: string }>("/auth/register", {
-      email: data.email,
-      phoneE164: data.phoneNumber,
-      password: data.rawPassword,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      countryCode: data.countryIsoCode,
-    }),
-};
+/**
+ * Active identity provider for the whole app. Every consumer (hooks, the
+ * auth store, the axios client) imports `authApi` typed as `AuthProvider`
+ * only — swapping Firebase for another provider means changing this one
+ * binding, nothing else.
+ */
+export const authApi: AuthProvider = firebaseAuthProvider;

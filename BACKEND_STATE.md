@@ -1,6 +1,6 @@
 # WiFi Platform Backend — État Actuel
 
-**Date** : 2026-04-20  
+**Date** : 2026-08-05  
 **Version** : 1.0.0-SNAPSHOT  
 **Stack** : Spring Boot 3.4.4 · Java 21 · PostgreSQL 16 · Maven 9 modules
 
@@ -26,9 +26,10 @@ wifi-platform-parent (pom.xml)
 - Domaine pur : zéro `@Spring` / `jakarta.persistence` dans `/domain/`
 - Inter-BC via Ports synchrones (sauf Analytics : `@Async`)
 - Multi-tenant : RLS PostgreSQL activée sur toutes les tables métier
-- Migrations Flyway V1–V6 versionnées
-- Argon2id (m=64MB, t=3, p=4) pour les mots de passe
-- JWT HMAC-SHA256 avec rotation des refresh tokens
+- Migrations Flyway V1–V26 versionnées
+- Authentification déléguée à **Firebase Authentication** (SDK client) ; le backend ne
+  vérifie que des ID tokens Firebase (`FirebaseAuthenticationFilter`) — plus de mot de
+  passe ni de JWT maison côté Spring (voir §4)
 
 ---
 
@@ -113,81 +114,77 @@ tokenId: UUID, username: String, accessCode: String, expiresAt: Instant
 
 ## 4. BC-IAM — Identity & Access Management
 
+### Authentification : déléguée à Firebase
+
+L'inscription, la connexion (email/mot de passe + Google) et le rafraîchissement de session
+sont entièrement gérés côté client par le SDK Firebase Auth (`firebaseAuthProvider.ts` dans
+Ronet_api) — le backend ne les implémente plus. Le seul contrat côté serveur est de vérifier
+l'ID token Firebase envoyé en `Authorization: Bearer <idToken>` sur chaque requête.
+
+- **`FirebaseConfig`** (platform-app) : construit les beans `FirebaseApp`/`FirebaseAuth` à
+  partir d'un compte de service (`app.firebase-credentials`, chemin `file:`/`classpath:`) ou,
+  à défaut, des Application Default Credentials.
+- **`FirebaseAuthenticationFilter`** (platform-app) : vérifie l'ID token, puis résout
+  l'autorisation (rôle, tenant) **depuis la base locale** via `SyncFirebaseUserHandler` —
+  jamais depuis les claims du token, qui peuvent être périmés (ex. juste après une
+  promotion). Provisionne automatiquement un profil `iam.users` au premier passage d'une
+  identité Firebase inconnue (`firebaseUid`), en la rattachant par email si un compte legacy
+  existe déjà (cas du SUPER_ADMIN seedé en base, migré vers Firebase après coup). Repousse
+  ensuite l'état DB comme custom claims Firebase (`role`, `tenantId`, `firstName`,
+  `lastName`, `countryCode`) uniquement quand ils divergent, pour que le prochain
+  rafraîchissement de token côté client les porte déjà.
+- **`GET /auth/me`** *(authentifié)* : relit le profil synchronisé (`UserDto`).
+
 ### Fonctionnalités implémentées
-- Inscription avec hash Argon2id
-- Login avec émission JWT (15 min) + refresh token (30 jours, SHA-256 en base)
-- Rotation des refresh tokens (révocation de l'ancien à chaque refresh)
+- Vérification des ID tokens Firebase + auto-provisioning du profil local
+- Synchronisation des custom claims Firebase (rôle/tenant/profil) depuis la base
 - Gestion utilisateurs SUPER_ADMIN : liste, activation/désactivation, suppression douce
+- Promotion `CLIENT → ADMIN_WIFI` avec création du tenant (`PromoteUserHandler`)
 - Modèle multi-tenant : chaque `User` appartient à un `Tenant`
 
 ### Modèle domaine
 
-**`User`** : id, tenantId, email (Email), phoneNumber (PhoneNumber), countryCode, role (UserRole), active, deleted, createdAt, lastLoginAt  
-Méthodes : `register()`, `login()`, `promoteToAdminWifi()`, `toggleActive()`, `softDelete()`, `invalidateAllTokens()`
+**`User`** : id, tenantId, email (Email), phone (PhoneNumber, nullable), firebaseUid,
+firstName, lastName, countryCode, role (UserRole), active, deleted, createdAt  
+Méthodes : `registerFromFirebase()`, `linkFirebaseUid()`, `completeProfile()`,
+`promoteToAdminWifi()`, `toggleActive()`, `softDelete()`
 
 **`UserRole`** : `CLIENT` | `ADMIN_WIFI` | `SUPER_ADMIN`
 
 **`Tenant`** : id, name, countryCode, active, createdAt
 
-**`RefreshToken`** : id, userId, tokenHash, expiresAt, revoked  
-Méthodes : `revoke()`, `isExpired()`
-
 ### Endpoints
 
-#### `POST /auth/register`
-Crée un nouvel utilisateur CLIENT.
+#### `GET /auth/me` *(authentifié)*
+Profil de l'utilisateur courant, tel que synchronisé depuis Firebase.
+**Response 200** `UserDto`
 
-**Request** `RegisterRequest`
-```json
-{
-  "email": "user@example.com",
-  "password": "P@ssword1",
-  "phoneNumber": "+2376XXXXXXXX",
-  "countryCode": "CM",
-  "tenantId": "uuid"
-}
-```
-**Response 201** `AuthTokensDto`
-```json
-{
-  "accessToken": "eyJ...",
-  "refreshToken": "raw-token",
-  "expiresIn": 900
-}
-```
-
-#### `POST /auth/login`
-**Request** `LoginRequest`
-```json
-{ "email": "user@example.com", "password": "P@ssword1" }
-```
-**Response 200** `AuthTokensDto` (même structure)
-
-#### `POST /auth/refresh`
-**Request** `RefreshTokenRequest`
-```json
-{ "refreshToken": "raw-token" }
-```
-**Response 200** `AuthTokensDto` (nouveau token, ancien révoqué)
-
-#### `GET /admin/users` *(SUPER_ADMIN)*
+#### `GET /api/users` *(ADMIN_WIFI+, header `X-Tenant-Id`)*
+Liste scopée au tenant (globale si SUPER_ADMIN), filtrable par `?role=`.
 **Response 200** `List<UserDto>`
 ```json
 [{
   "id": "uuid",
+  "tenantId": "uuid",
   "email": "...",
-  "phoneNumber": "...",
-  "countryCode": "CM",
+  "phone": null,
+  "firstName": "...",
+  "lastName": "...",
   "role": "CLIENT",
   "active": true,
-  "tenantId": "uuid"
+  "countryCode": "CM",
+  "createdAt": "..."
 }]
 ```
 
-#### `PUT /admin/users/{id}/toggle-active` *(SUPER_ADMIN)*
+#### `PATCH /api/users/{id}/toggle-status` *(ADMIN_WIFI+)*
 **Response 200** `UserDto`
 
-#### `DELETE /admin/users/{id}` *(SUPER_ADMIN)*
+#### `PATCH /api/users/{id}/promote-admin-wifi` *(SUPER_ADMIN)*
+Corps : nom du tenant à créer pour ce nouvel ADMIN_WIFI.
+**Response 200** `UserDto`
+
+#### `DELETE /api/users/{id}` *(SUPER_ADMIN)*
 **Response 204**
 
 ---
@@ -440,16 +437,22 @@ Header requis : `verif-hash: <secret>`
 
 | Route | Accès |
 |-------|-------|
-| `POST /auth/**` | Public |
+| `GET /auth/me` | Authentifié (n'importe quel utilisateur Firebase valide) |
 | `POST /webhook/psp/**` | Public |
 | `POST /api/routers/*/heartbeat` | Public |
+| `GET /api/countries`, `/api/countries/**` | Public |
 | `GET /api/products` | Authentifié |
 | `POST /api/products`, `PUT`, `DELETE` | ADMIN_WIFI+ |
 | `POST /api/domains`, `POST /api/sites`, `POST /api/routers` | ADMIN_WIFI+ |
 | `PUT /api/routers/*/activate`, rotate-secrets | ADMIN_WIFI+ |
 | `POST /api/subscriptions`, `GET /api/subscriptions/mine` | CLIENT+ |
 | `POST /api/payments/initiate` | CLIENT+ |
-| `GET /admin/**`, `PUT /admin/**`, `DELETE /admin/**` | SUPER_ADMIN |
+| `GET /api/users` | ADMIN_WIFI+ |
+| `PATCH /api/users/*/promote-admin-wifi`, `DELETE /api/users/*` | SUPER_ADMIN |
+| Tout le reste | Authentifié par défaut |
+
+Toute requête authentifiée passe par `FirebaseAuthenticationFilter`, qui vérifie l'ID token
+Firebase — il n'y a plus de notion de route publique dédiée à l'auth elle-même (§4).
 
 ### Variables d'environnement requises
 
@@ -458,8 +461,7 @@ Header requis : `verif-hash: <secret>`
 | `DB_URL` | JDBC URL PostgreSQL |
 | `DB_USERNAME` | Utilisateur PostgreSQL |
 | `DB_PASSWORD` | Mot de passe PostgreSQL |
-| `JWT_SECRET` | Secret HMAC-SHA256 (base64, 256 bits min) |
-| `JWT_EXPIRATION_MS` | Expiration access token (défaut : 900000 = 15 min) |
+| `FIREBASE_CREDENTIALS_PATH` | Chemin (`file:`/`classpath:`) vers le JSON de compte de service Firebase Admin — vide → Application Default Credentials |
 | `FLUTTERWAVE_SECRET_HASH` | Secret de vérification webhooks Flutterwave |
 | `FLUTTERWAVE_SECRET_KEY` | Clé API Flutterwave |
 
@@ -479,14 +481,16 @@ java -jar platform-app/target/platform-app-1.0.0-SNAPSHOT.jar
 
 | Schéma | Tables | RLS |
 |--------|--------|-----|
-| `iam` | users, refresh_tokens | ✅ tenant_isolation |
+| `iam` | users (avec `firebase_uid`, `phone`/`first_name`/`last_name` nullables) | ✅ tenant_isolation |
 | `network_ops` | domains, sites, routers | ✅ tenant_isolation |
 | `access_sessions` | tokens | ✅ tenant_isolation |
 | `commerce` | products, subscriptions | ✅ tenant_isolation |
 | `payments` | payments, webhook_events, refunds | ✅ (webhook_events: allow_all) |
 | `analytics` | domain_events, audit_log, kpi_snapshots | ✅ tenant_isolation |
 
-Migrations Flyway : V1 (iam) → V2 (network_ops) → V3 (access_sessions) → V4 (commerce) → V5 (payments) → V6 (analytics)
+Migrations Flyway : V1 (iam) → … → V25 (radius-api) → **V26 (bascule Firebase : suppression de
+`iam.refresh_tokens`, `password_hash`, `token_version` ; ajout de `firebase_uid` ; `phone`,
+`first_name`, `last_name` rendus nullables)**.
 
 ---
 
@@ -495,7 +499,8 @@ Migrations Flyway : V1 (iam) → V2 (network_ops) → V3 (access_sessions) → V
 | Module | Tests | Couverture |
 |--------|-------|------------|
 | shared-kernel | `MoneyTest` (6 tests) | Money VO complet |
-| bc-iam | `UserTest` (8 tests) + `IamArchitectureTest` | Domaine + ArchUnit |
+| bc-iam | `UserTest`, `SyncFirebaseUserHandlerTest`, `PromoteUserHandlerTest`, `UserMapperTest`, `UserDtoTest`, `RepositoryAdapterIntegrationTest` (Testcontainers), `IamArchitectureTest` — 42 tests (+3 intégration nécessitant Docker) | Domaine + application + persistence + ArchUnit |
+| platform-app | `FirebaseAuthenticationFilterTest` (7 tests, token invalide/valide/compte désactivé/échec sync/sync des custom claims) | Filtre d'authentification |
 | bc-network-ops | `RouterTest` (5 tests) + `NetworkOpsArchitectureTest` | Domaine + ArchUnit |
 | bc-commerce | `SubscriptionTest` (4 tests) + `CommerceArchitectureTest` | Domaine + ArchUnit |
 | bc-payments | `PaymentTest` (4 tests) + `PaymentsArchitectureTest` | Domaine + ArchUnit |
@@ -517,7 +522,8 @@ Migrations Flyway : V1 (iam) → V2 (network_ops) → V3 (access_sessions) → V
 | `KpiAggregatorService` (`@Scheduled` 5 min) | Moyenne |
 | Controller REST Access-Sessions (statut token, révocation) | Moyenne |
 | Controller REST Analytics/Audit (SUPER_ADMIN) | Basse |
-| Migration JWT → RS256 asymétrique | Basse |
+| Assignation de `domainId` en custom claim Firebase (lu par le frontend, jamais écrit côté backend actuellement) | Moyenne |
+| Endpoint de complétion de profil (téléphone) pour les comptes créés via Firebase | Moyenne |
 | Tests intégration Testcontainers (couche infrastructure) | Haute |
 | Coverage domaine > 80% | Haute |
 | Tests E2E REST | Moyenne |

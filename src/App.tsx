@@ -51,6 +51,8 @@ import { useAuthStore } from '@/modules/auth/store/authStore';
 import { useTopologyStore } from '@/modules/network-ops/store/topologyStore';
 // Helper to allow nested protected routes
 import { Outlet } from 'react-router-dom';
+
+import {AppProviders} from './firebase';
 function OutletProxy() {
   return <Outlet />;
 }
@@ -70,14 +72,15 @@ function AcheterRedirect() {
 }
 
 function App() {
-  const { user } = useAuthStore();
+  const { user, initializing } = useAuthStore();
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-    <BrowserRouter>
-      <TooltipProvider>
-        <Toaster position="top-center" richColors />
-        <Routes>
+    <AppProviders>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <BrowserRouter>
+          <TooltipProvider>
+            <Toaster position="top-center" richColors />
+            <Routes>
           {/* Public Routes */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
@@ -137,7 +140,12 @@ function App() {
           </Route>
 
           {/* Default Redirects */}
+          {/* Note: kept as-is — CLIENT lands on /home here but on /souscriptions
+              right after login (useAuth) / on role-mismatch (ProtectedRoute).
+              Pre-existing inconsistency, not something this refactor should
+              silently resolve either way. */}
           <Route path="/" element={
+            initializing ? null : // Firebase restores the session async — avoid a flash redirect to /login
             user ? (
               user.role === 'CLIENT' ? <Navigate to="/home" replace /> :
               user.role === 'ADMIN_WIFI' ? <Navigate to="/sites" replace /> :
@@ -150,6 +158,7 @@ function App() {
       </TooltipProvider>
     </BrowserRouter>
     </ThemeProvider>
+    </AppProviders>
   );
 }
 

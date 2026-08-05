@@ -3,12 +3,12 @@ import { Outlet } from 'react-router-dom';
 
 const AuthLayout: React.FC = () => {
   return (
-    <div className="grid min-h-screen bg-background text-foreground ">
+    <div className="grid min-h-screen bg-background text-foreground lg:grid-cols-[40%_60%]">
       {/* Left — form */}
       <div className="flex flex-col justify-center items-center gap-8 p-6 sm:p-10 ">
-        <div className="flex flex-col  gap-2">
+        <div className="flex flex-col  gap-2  w-full justify-center items-center">
          
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-md ">
             <Outlet />
           </div>
         </div>
@@ -16,7 +16,7 @@ const AuthLayout: React.FC = () => {
       </div>
 
       {/* Right — decorative gradient panel */}
-      {/* <div className="relative hidden overflow-hidden bg-gradient-to-br from-(--accent-green) via-cyan-700 to-blue-900 lg:flex lg:items-end lg:justify-center lg:p-12">
+      <div className="relative hidden overflow-hidden bg-gradient-to-br from-(--accent-green) via-cyan-700 to-blue-900 lg:flex lg:items-end lg:justify-center lg:p-12">
         <div className="w-full max-w-sm rounded-lg border border-border/40 bg-card/90 p-4 shadow-lg backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
@@ -38,7 +38,7 @@ const AuthLayout: React.FC = () => {
             <div className="h-full w-4/5 rounded-full bg-gradient-to-r from-(--accent-green) to-cyan-500" />
           </div>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };
