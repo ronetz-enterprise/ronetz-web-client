@@ -3,9 +3,6 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/modules/auth/store/authStore';
 import { siteApi } from '@/modules/network-ops/api/siteApi';
 import { authApi } from '@/modules/auth/api/authApi';
-import { getJwtPayload } from '@/shared/hooks/jwtUtil';
-import type { User } from '@/modules/auth/types';
-import type { UserRole } from '@/shared/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,12 +18,8 @@ import { toast } from 'sonner';
 import { getApiErrorMessage } from '@/shared/lib/apiError';
 import { useDomains } from '@/modules/network-ops/hooks/useDomain';
 
-function isUserRole(role: string | undefined): role is UserRole {
-  return role === 'CLIENT' || role === 'ADMIN_WIFI' || role === 'SUPER_ADMIN';
-}
-
 const WifiDomainSetupPage: React.FC = () => {
-  const { user, refreshToken, setTokens, setUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { exist, loading } = useDomains();
   const navigate = useNavigate();
 
@@ -62,40 +55,19 @@ const WifiDomainSetupPage: React.FC = () => {
       return;
     }
 
-    if (!refreshToken) {
-      toast.error('Session invalide, reconnectez-vous');
-      return;
-    }
-
     setSubmitting(true);
 
     try {
       // ✅ 1. Création domaine
-      const domainRes = await siteApi.createDomain({ name: trimmed });
-      const createdDomainId = domainRes.data.id;
+      await siteApi.createDomain({ name: trimmed });
 
-      // ✅ 2. Refresh token (mettre à jour domainId côté JWT)
-      const refreshRes = await authApi.refresh(refreshToken);
-      const { accessToken, refreshToken: newRefresh } = refreshRes.data;
-
-      setTokens(accessToken, newRefresh);
-
-      // ✅ 3. Rebuild user depuis JWT
-      const payload = getJwtPayload(accessToken);
-
-      const role = isUserRole(payload?.role)
-        ? payload.role
-        : 'ADMIN_WIFI';
-
-      const nextUser: User = {
-        id: payload?.sub ?? user.id,
-        email: payload?.email ?? user.email,
-        role,
-        firstName: payload?.firstName ?? user.firstName,
-        domainId: payload?.domainId ?? createdDomainId,
-      };
-
-      setUser(payload ? nextUser : null);
+      // ✅ 2. Le backend attache `domainId` en custom claim sur cet
+      // utilisateur Firebase à la création du domaine ; on force un refresh
+      // du token pour le récupérer. authStore est abonné à
+      // authApi.onSessionChanged, donc `user` se met à jour automatiquement.
+      // Note : si le claim met un peu de temps à se propager côté backend,
+      // `user.domainId` peut rester temporairement absent — à surveiller.
+      await authApi.getAccessToken(true);
 
       toast.success('Domaine créé');
 

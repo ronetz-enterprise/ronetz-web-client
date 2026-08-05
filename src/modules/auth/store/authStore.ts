@@ -1,40 +1,34 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { authApi } from '../api/authApi';
 import type { User } from '../types';
 
 interface AuthState {
   user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
-  setUser: (user: User | null) => void;
-  setTokens: (accessToken: string, refreshToken: string) => void;
+  /** True until the provider has reported its first session (app load/refresh). */
+  initializing: boolean;
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      accessToken: null,
-      refreshToken: null,
-      isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      setTokens: (accessToken, refreshToken) => {
-        // Keep compatibility with Axios interceptor (reads plain keys).
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        set({ accessToken, refreshToken });
-      },
-      logout: () => {
-        set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
-        localStorage.removeItem('auth-storage');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-      },
-    }),
-    {
-      name: 'auth-storage',
-    }
-  )
-);
+// The store is a pure reflection of `authApi`'s session: it subscribes once,
+// at creation, and never decodes tokens or builds `User` itself — that logic
+// lives entirely behind the `AuthProvider` interface. No persist middleware
+// here: the provider (Firebase) already persists the session itself, so
+// caching it a second time in localStorage would just risk drifting from it.
+export const useAuthStore = create<AuthState>()((set) => {
+  authApi.onSessionChanged((session) => {
+    set({ user: session?.user ?? null, isAuthenticated: !!session, initializing: false });
+  });
+
+  return {
+    user: null,
+    isAuthenticated: false,
+    initializing: true,
+    logout: () => {
+      // Clear optimistically so the UI reacts immediately; onSessionChanged
+      // will confirm it once the provider actually completes sign-out.
+      set({ user: null, isAuthenticated: false });
+      void authApi.logout();
+    },
+  };
+});

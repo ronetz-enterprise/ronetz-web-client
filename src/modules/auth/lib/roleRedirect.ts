@@ -1,0 +1,13 @@
+import type { UserRole } from "@/shared/types";
+
+/** Landing route right after authentication, or when a role guard rejects access. */
+export function getDefaultPathForRole(role: UserRole): string {
+  switch (role) {
+    case "CLIENT":
+      return "/souscriptions";
+    case "ADMIN_WIFI":
+      return "/sites";
+    case "SUPER_ADMIN":
+      return "/admin/users";
+  }
+}
