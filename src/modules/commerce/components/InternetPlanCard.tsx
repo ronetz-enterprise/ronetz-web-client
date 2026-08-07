@@ -10,11 +10,9 @@ interface ForfaitCardProps {
   selected?: boolean;
   onSelect?: (forfait: Forfait) => void;
   className?: string;
-  /** Admin contexts must stay clickable on inactive forfaits (e.g. to reactivate them). */
-  alwaysInteractive?: boolean;
 }
 
-export const InternetPlanCard: React.FC<ForfaitCardProps> = ({ forfait, selected, onSelect, className, alwaysInteractive }) => {
+export const InternetPlanCard: React.FC<ForfaitCardProps> = ({ forfait, selected, onSelect, className }) => {
   const fmtAmount = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
   const active = Boolean(forfait.active);
 
