@@ -1,44 +1,29 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import loginHero from '@/assets/login_hero.png';
+import { Card } from '@/components/ui/card';
 
 const AuthLayout: React.FC = () => {
   return (
-    <div className="grid min-h-screen bg-background text-foreground lg:grid-cols-[40%_60%]">
-      {/* Left — form */}
-      <div className="flex flex-col justify-center items-center gap-8 p-6 sm:p-10 ">
-        <div className="flex flex-col  gap-2  w-full justify-center items-center">
-         
-          <div className="w-full max-w-md ">
+    <div className="flex min-h-screen items-center bg-sidebar justify-center  p-4 text-foreground sm:p-8">
+      <Card className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-border/10  shadow-sm lg:grid-cols-[55%_45%] p-0">
+        {/* Left — hero image with brand caption */}
+        <div className="relative hidden aspect-square self-start lg:block">
+          <img src={loginHero} alt="" className="h-full w-full object-cover " />
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-8 pt-24">
+           
+            
+           
+          </div>
+        </div>
+
+        {/* Right — form */}
+        <div className="flex flex-col items-center justify-center gap-8 p-6 sm:p-10 relative">
+          <div className="w-full max-w-sm  ">
             <Outlet />
           </div>
         </div>
-
-      </div>
-
-      {/* Right — decorative gradient panel */}
-      <div className="relative hidden overflow-hidden bg-gradient-to-br from-(--accent-green) via-cyan-700 to-blue-900 lg:flex lg:items-end lg:justify-center lg:p-12">
-        <div className="w-full max-w-sm rounded-lg border border-border/40 bg-card/90 p-4 shadow-lg backdrop-blur-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-              Débit descendant
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-(--accent-green)">
-              <span className="relative inline-flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-(--accent-green) opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-(--accent-green)" />
-              </span>
-              Fibre active
-            </span>
-          </div>
-          <p className="mt-1.5">
-            <span className="text-2xl font-bold text-card-foreground">940.5</span>{' '}
-            <span className="text-sm font-medium text-(--accent-green)">Mbps</span>
-          </p>
-          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-border">
-            <div className="h-full w-4/5 rounded-full bg-gradient-to-r from-(--accent-green) to-cyan-500" />
-          </div>
-        </div>
-      </div>
+      </Card>
     </div>
   );
 };

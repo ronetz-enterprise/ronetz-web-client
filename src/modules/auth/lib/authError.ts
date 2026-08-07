@@ -27,3 +27,13 @@ export function getAuthErrorMessage(error: unknown, fallback: string): string {
   }
   return fallback;
 }
+
+/**
+ * True when registration failed because the email is already taken. Kept
+ * here (the one place allowed to know about Firebase error shapes) so
+ * callers like the email-first auth flow can branch on it without importing
+ * `FirebaseError` themselves.
+ */
+export function isEmailAlreadyInUseError(error: unknown): boolean {
+  return error instanceof FirebaseError && error.code === "auth/email-already-in-use";
+}

@@ -1,12 +1,15 @@
+import axios from "axios";
 import {
   createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
+  OAuthProvider,
   onIdTokenChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
   updateProfile,
+  type AuthProvider as FirebaseSocialProvider,
   type User as FirebaseUser,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
@@ -48,6 +51,22 @@ async function toSession(firebaseUser: FirebaseUser, forceRefresh = false): Prom
   return { user, accessToken: idToken };
 }
 
+/** Shared by loginWithGoogle/loginWithApple — same popup + cancellation handling either way. */
+async function signInWithSocialPopup(provider: FirebaseSocialProvider): Promise<AuthSession | null> {
+  try {
+    const { user } = await signInWithPopup(auth, provider);
+    // `forceRefresh`: this may be this user's first sign-in, so custom
+    // claims might not exist yet.
+    return toSession(user, true);
+  } catch (error) {
+    const cancelled =
+      error instanceof FirebaseError &&
+      (error.code === "auth/popup-closed-by-user" || error.code === "auth/cancelled-popup-request");
+    if (cancelled) return null; // user dismissed the popup — not a real error
+    throw error;
+  }
+}
+
 export const firebaseAuthProvider: AuthProvider = {
   async login({ email, password }: LoginRequest) {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
@@ -56,7 +75,7 @@ export const firebaseAuthProvider: AuthProvider = {
 
   async register(data: RegisterRequest) {
     const { user } = await createUserWithEmailAndPassword(auth, data.email, data.password);
-    await updateProfile(user, { displayName: `${data.firstName} ${data.lastName}`.trim() });
+    await updateProfile(user, { displayName: data.name });
 
     // TODO(backend): role/tenantId/countryCode still need to be assigned as
     // custom claims server-side (Admin SDK), e.g. from an onCreate trigger.
@@ -65,18 +84,34 @@ export const firebaseAuthProvider: AuthProvider = {
     return toSession(user, true);
   },
 
-  async loginWithGoogle() {
+  loginWithGoogle() {
+    return signInWithSocialPopup(new GoogleAuthProvider());
+  },
+
+  loginWithApple() {
+    return signInWithSocialPopup(new OAuthProvider("apple.com"));
+  },
+
+  async checkEmailExists(email) {
+    // The client SDK's fetchSignInMethodsForEmail always returns [] once
+    // this project's "Email Enumeration Protection" is enabled — every
+    // email then looks "new" to it. So this asks the backend instead
+    // (GET /auth/email-exists, public route — see SecurityConfig), which
+    // answers via the Admin SDK and isn't subject to that setting.
+    //
+    // Fails open to "no" on any error (network down, backend unreachable,
+    // ...): the register-details step this feeds stays safe either way —
+    // if a genuinely existing email lands there anyway, register() fails
+    // with `auth/email-already-in-use` and the UI falls back to the login
+    // step (see AuthForm's onSubmitRegister).
     try {
-      const { user } = await signInWithPopup(auth, new GoogleAuthProvider());
-      // `forceRefresh`: same reasoning as register() — this may be this
-      // user's first sign-in, so custom claims might not exist yet.
-      return toSession(user, true);
-    } catch (error) {
-      const cancelled =
-        error instanceof FirebaseError &&
-        (error.code === "auth/popup-closed-by-user" || error.code === "auth/cancelled-popup-request");
-      if (cancelled) return null; // user dismissed the popup — not a real error
-      throw error;
+      const { data } = await axios.get<{ exists: boolean }>(
+        `${import.meta.env.VITE_API_URL}/auth/email-exists`,
+        { params: { email } }
+      );
+      return data.exists;
+    } catch {
+      return false;
     }
   },
 

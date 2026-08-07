@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { ArrowDownToLine, ArrowUpFromLine, RefreshCw, Wallet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +40,6 @@ export default function WalletPage() {
       <div className="flex items-center justify-between px-6 py-4 border-b">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Mon Portefeuille</h1>
-          
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={refresh} title="Actualiser">
@@ -55,16 +55,33 @@ export default function WalletPage() {
         </div>
       </div>
 
-      <div className="">
-        {/* KPI Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 divide-x">
-          <KpiCard
-            title="Solde disponible"
-            value={wallet ? fmt(wallet.balanceAmount) : "—"}
-            subtitle="Prêt à retirer"
-            icon={Wallet}
-            loading={loading}
-          />
+      {/* Same recipe as AdminHomePage: content capped at 4xl and centered,
+          Card-based KPIs with real gaps instead of a flat divide-x strip,
+          "Solde" gets the same white→purple wash as the Home page's card. */}
+      <div className="max-w-4xl mx-auto px-6 py-8 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Card
+            className="relative overflow-hidden bg-white dark:bg-card [background-image:radial-gradient(140%_120%_at_100%_0%,color-mix(in_oklab,var(--accent-purple)_14%,transparent)_0%,transparent_65%)]"
+            style={{ "--card-edge-color": "var(--accent-purple)" } as CSSProperties}
+          >
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Solde disponible</CardTitle>
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-(--accent-purple)/10">
+                <Wallet className="h-4 w-4 text-(--accent-purple)" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-8 w-32 mt-1" />
+              ) : (
+                <>
+                  <p className="text-[26px] font-semibold tracking-tight">{wallet ? fmt(wallet.balanceAmount) : "—"}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Prêt à retirer</p>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
           <KpiCard
             title="Total encaissé"
             value={totalIn > 0 ? fmt(totalIn) : "—"}

@@ -51,6 +51,12 @@ export const navigationConfig: NavItem[] = [
 
   // ADMIN_WIFI
   {
+    title: 'Accueil',
+    href: '/dashboard',
+    icon: Home,
+    roles: ['ADMIN_WIFI'],
+  },
+  {
     title: 'Sites',
     href: '/sites',
     icon: MapPin,

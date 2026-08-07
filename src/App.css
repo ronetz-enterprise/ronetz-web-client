@@ -37,6 +37,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-background-0:var(--back);
+  --color-background-0-foreground: var(--back-foreground);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -46,6 +48,17 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  @keyframes liquid-drift {
+  0% {
+    background-position: 0% 0%, 100% 100%, 0% 0%;
+    }
+  50% {
+    background-position: 30% 20%, 70% 80%, 0% 0%;
+    }
+  100% {
+    background-position: 0% 0%, 100% 100%, 0% 0%;
+    }
+  }
 }
 
 /*
@@ -56,9 +69,17 @@
  * par le bouton (voir components/ui/button.tsx) pour un rendu pilule.
  */
 :root {
-  --background: #fbfbfb;
+  --background: #f4f4f4;
   --foreground: #0d0d0d;
   --card: #ffffff;
+  /* --back is a fixed dark chrome surface (header bar, sidebar backdrop) —
+     unlike --card/--background it does NOT flip in .dark, so its own
+     foreground pairing (--back-foreground) stays fixed too: content sitting
+     on it always needs light text, whichever theme the rest of the app is
+     in. Without this, text/icons here were inheriting the themed
+     --foreground (near-black in light mode) onto a near-black surface. */
+  --back:#141414;
+  --back-foreground: #f5f5f5;
   --card-foreground: #0d0d0d;
   --popover: #ffffff;
   --popover-foreground: #0d0d0d;
@@ -82,11 +103,11 @@
   --chart-5: oklch(0.269 0 0);
   --radius: 0.5rem;
   --radius-btn: 0.5rem;
-  --sidebar: #fff;
-  --sidebar-foreground: #0d0d0d;
+  --sidebar: #e4e4e4;
+  --sidebar-foreground: #3d3d3d;
   --sidebar-primary: #0d0d0d;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ececec;
+  --sidebar-accent: #ffffff;
   --sidebar-accent-foreground: #0d0d0d;
   --sidebar-border: #e5e5e5;
   --sidebar-ring: #0d0d0d;
@@ -106,7 +127,7 @@
    */
   --background: #0f110f;
   --foreground: #f5f5f5;
-  --card: #242424;
+  --card: #131313;
   --card-foreground: #f5f5f5;
   --popover: #242424;
   --popover-foreground: #f5f5f5;
@@ -120,7 +141,7 @@
   --accent-foreground: #f5f5f5;
   --destructive: #ef4444;
   --destructive-foreground: #f5f5f5;
-  --border: #202020;
+  --border: #272525;
   --input: #333333;
   --ring: #f5f5f5;
   --chart-1: oklch(0.87 0 0);
@@ -128,7 +149,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: #0c0c0c;
+  --sidebar: #000;
   --sidebar-foreground: #f5f5f5;
   --sidebar-primary: #f5f5f5;
   --sidebar-primary-foreground: #0d0d0d;
@@ -154,5 +175,6 @@
 
   html {
     @apply font-sans;
+
   }
 }

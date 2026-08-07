@@ -6,7 +6,7 @@ export function getDefaultPathForRole(role: UserRole): string {
     case "CLIENT":
       return "/souscriptions";
     case "ADMIN_WIFI":
-      return "/sites";
+      return "/dashboard";
     case "SUPER_ADMIN":
       return "/admin/users";
   }

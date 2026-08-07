@@ -27,8 +27,8 @@ export function SiteDialog({ onCreate }: SiteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="hover:bg-primary-hover">
-          <Plus className="mr-2 h-5 w-5" /> Nouveau Site
+        <Button variant={"primary-glass"} size="xs" className=" !rounded-full px-5">
+          Ajouter Site
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

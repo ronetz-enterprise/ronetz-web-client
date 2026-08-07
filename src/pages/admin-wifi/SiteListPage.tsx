@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSites } from '@/modules/network-ops/hooks/useSites';
 import { MapPin } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import SitePage from '@/modules/network-ops/components/SiteTable';
 import { SiteDialog } from '@/modules/network-ops/components/SiteDialog';
 
@@ -17,15 +16,9 @@ const SiteListPage: React.FC = () => {
         <SiteDialog onCreate={createSite} />
       </div>
 
-      <div className="py-6  ">
-        {loading ? (
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-14 rounded-lg" />
-            ))}
-          </div>
-        ) : sites.length > 0 ? (
-          <SitePage sites={sites} />
+      <div className="p-6  ">
+        {loading || sites.length > 0 ? (
+          <SitePage sites={sites} loading={loading} />
         ) : (
           <div className="py-20 text-center space-y-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-border mx-auto">

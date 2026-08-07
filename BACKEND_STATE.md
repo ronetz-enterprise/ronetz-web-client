@@ -134,6 +134,11 @@ l'ID token Firebase envoyé en `Authorization: Bearer <idToken>` sur chaque requ
   `lastName`, `countryCode`) uniquement quand ils divergent, pour que le prochain
   rafraîchissement de token côté client les porte déjà.
 - **`GET /auth/me`** *(authentifié)* : relit le profil synchronisé (`UserDto`).
+- **`GET /auth/email-exists`** *(public)* : indique si un compte Firebase existe déjà pour un
+  email donné (`EmailExistsResponse`), via `FirebaseAuth.getUserByEmail` (Admin SDK — non
+  soumis à la protection anti-énumération côté client). Alimente le flow d'inscription
+  email-first du frontend (`checkEmailExists` dans `firebaseAuthProvider.ts`), qui bascule vers
+  l'étape "mot de passe" ou "créer un compte" selon la réponse.
 
 ### Fonctionnalités implémentées
 - Vérification des ID tokens Firebase + auto-provisioning du profil local
@@ -141,6 +146,7 @@ l'ID token Firebase envoyé en `Authorization: Bearer <idToken>` sur chaque requ
 - Gestion utilisateurs SUPER_ADMIN : liste, activation/désactivation, suppression douce
 - Promotion `CLIENT → ADMIN_WIFI` avec création du tenant (`PromoteUserHandler`)
 - Modèle multi-tenant : chaque `User` appartient à un `Tenant`
+- Détection fiable côté serveur de l'existence d'un compte par email (`GET /auth/email-exists`)
 
 ### Modèle domaine
 
@@ -158,6 +164,13 @@ Méthodes : `registerFromFirebase()`, `linkFirebaseUid()`, `completeProfile()`,
 #### `GET /auth/me` *(authentifié)*
 Profil de l'utilisateur courant, tel que synchronisé depuis Firebase.
 **Response 200** `UserDto`
+
+#### `GET /auth/email-exists?email=...` *(public)*
+Existence d'un compte Firebase pour cet email, via Admin SDK (`FirebaseAuth.getUserByEmail`).
+**Response 200** `EmailExistsResponse`
+```json
+{ "exists": true }
+```
 
 #### `GET /api/users` *(ADMIN_WIFI+, header `X-Tenant-Id`)*
 Liste scopée au tenant (globale si SUPER_ADMIN), filtrable par `?role=`.
@@ -438,6 +451,7 @@ Header requis : `verif-hash: <secret>`
 | Route | Accès |
 |-------|-------|
 | `GET /auth/me` | Authentifié (n'importe quel utilisateur Firebase valide) |
+| `GET /auth/email-exists` | Public |
 | `POST /webhook/psp/**` | Public |
 | `POST /api/routers/*/heartbeat` | Public |
 | `GET /api/countries`, `/api/countries/**` | Public |
