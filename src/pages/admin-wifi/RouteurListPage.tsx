@@ -2,7 +2,6 @@ import React from 'react';
 import { useRouteurs } from '@/modules/network-ops/hooks/useRouteurs';
 import { RouteurDialog } from '@/modules/network-ops/components/RouteurDialog';
 import { Wifi } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { useTopologyStore } from "@/modules/network-ops/store/topologyStore";
 import { RouteurPage } from '@/modules/network-ops/components/RouteurPage';
 
@@ -25,21 +24,18 @@ const RouteurListPage: React.FC = () => {
         <RouteurDialog onCreate={createRouteur} />
       </div>
 
-      <div className="">
-        {loading ? (
-          [1, 2, 3].map(i => (
-            <Card key={i} className="h-16 mb-2 animate-pulse bg-muted border-none rounded-lg" />
-          ))
-        ) : activeSiteId ? (
+      <div className="p-6">
+        {activeSiteId ? (
           <div className="p-20 text-center bg-card rounded-lg border border-dashed border-border space-y-4">
             <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-border mx-auto">
               <Wifi className="h-5 w-5 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground font-bold">Sélectionnez un site pour afficher ses routeurs.</p>
           </div>
-        ) : routeurs.length > 0 ? (
+        ) : loading || routeurs.length > 0 ? (
           <RouteurPage
             routeurs={routeurs}
+            loading={loading}
             onDownloadConfig={downloadConfig}
             onDelete={deleteRouteur}
             onActivate={activateRouteur}

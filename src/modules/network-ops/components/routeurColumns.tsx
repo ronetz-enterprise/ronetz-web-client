@@ -1,8 +1,15 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { type Routeur } from "../types";
 import { Button } from "@/components/ui/button";
-import { Download, Edit, Trash2, Power, RefreshCw, Network } from "lucide-react";
+import { Download, Edit, Trash2, Power, RefreshCw, Network, MoreHorizontal } from "lucide-react";
 import { StatusBadge, type StatusBadgeTone } from "@/shared/components/StatusBadge";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const statutTone: Record<Routeur["status"], StatusBadgeTone> = {
     ACTIVE: "success",
@@ -60,86 +67,84 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
         {
             id: "actions",
             header: () => <span className="sr-only">Actions</span>,
+            enableSorting: false,
             cell: ({ row }) => {
                 const r = row.original;
                 const isDecommissioned = r.status === "DECOMMISSIONED";
                 return (
-                    <div className="flex items-center justify-end gap-1">
-                        {r.status === "PROVISIONED" && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => actions.onActivate?.(r.id)}
-                                title="Activer"
-                                className="h-9 w-9 text-amber-400 hover:text-primary hover:bg-primary/10 rounded-xl"
-                            >
-                                <Power size={16} />
-                            </Button>
-                        )}
+                    <div className="text-right" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground"
+                                    aria-label="Menu actions"
+                                >
+                                    <MoreHorizontal size={16} />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                                {r.status === "PROVISIONED" && (
+                                    <DropdownMenuItem onClick={() => actions.onActivate?.(r.id)}>
+                                        <Power className="mr-2 h-4 w-4" />
+                                        Activer
+                                    </DropdownMenuItem>
+                                )}
 
-                        {r.status === "ACTIVE" && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => {
-                                    if (window.confirm("Régénérer les secrets VPN et RADIUS ? Les connexions actives seront interrompues.")) {
-                                        actions.onRotateSecrets?.(r.id);
-                                    }
-                                }}
-                                title="Rotation des secrets"
-                                className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl"
-                            >
-                                <RefreshCw size={16} />
-                            </Button>
-                        )}
+                                {r.status === "ACTIVE" && (
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            if (window.confirm("Régénérer les secrets VPN et RADIUS ? Les connexions actives seront interrompues.")) {
+                                                actions.onRotateSecrets?.(r.id);
+                                            }
+                                        }}
+                                    >
+                                        <RefreshCw className="mr-2 h-4 w-4" />
+                                        Rotation des secrets
+                                    </DropdownMenuItem>
+                                )}
 
-                        {!isDecommissioned && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => actions.onDownloadConfig(r.id, r.name)}
-                                title="Télécharger la config"
-                                className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl"
-                            >
-                                <Download size={16} />
-                            </Button>
-                        )}
+                                {!isDecommissioned && (
+                                    <DropdownMenuItem onClick={() => actions.onDownloadConfig(r.id, r.name)}>
+                                        <Download className="mr-2 h-4 w-4" />
+                                        Télécharger la config
+                                    </DropdownMenuItem>
+                                )}
 
-                        {r.vpnPublicKey && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => navigator.clipboard.writeText(r.vpnPublicKey!)}
-                                title="Copier la clé publique VPN"
-                                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl"
-                            >
-                                <Network size={16} />
-                            </Button>
-                        )}
+                                {r.vpnPublicKey && (
+                                    <DropdownMenuItem onClick={() => navigator.clipboard.writeText(r.vpnPublicKey!)}>
+                                        <Network className="mr-2 h-4 w-4" />
+                                        Copier la clé publique VPN
+                                    </DropdownMenuItem>
+                                )}
 
-                        {!isDecommissioned && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => actions.onEdit?.(r)}
-                                title="Modifier"
-                                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl"
-                            >
-                                <Edit size={16} />
-                            </Button>
-                        )}
+                                {!isDecommissioned && actions.onEdit && (
+                                    <DropdownMenuItem onClick={() => actions.onEdit?.(r)}>
+                                        <Edit className="mr-2 h-4 w-4" />
+                                        Modifier
+                                    </DropdownMenuItem>
+                                )}
 
-                        {!isDecommissioned && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => actions.onDelete(r.id)}
-                                title="Supprimer"
-                                className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
-                            >
-                                <Trash2 size={16} />
-                            </Button>
-                        )}
+                                {!isDecommissioned && (
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            variant="destructive"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                if (window.confirm("Supprimer définitivement ce routeur ?")) {
+                                                    actions.onDelete(r.id);
+                                                }
+                                            }}
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Supprimer
+                                        </DropdownMenuItem>
+                                    </>
+                                )}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 );
             },

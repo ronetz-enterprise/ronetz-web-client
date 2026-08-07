@@ -1,34 +1,37 @@
 import { AppSidebar } from "@/components/app-sidebar"
-import { Separator } from "@/components/ui/separator"
+import { SiteHeader } from "@/components/site-header"
 import {
     SidebarInset,
     SidebarProvider,
-    SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Outlet } from "react-router-dom"
 
 export default function Page() {
     return (
-        <SidebarProvider className="">
-            <AppSidebar className="border-none" />
-            <SidebarInset className="bg-sidebar" >
-                <header className="flex h-[45px]   shrink-0 items-center px-4 gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-
-                    <div className="flex items-center gap-2 px-4">
-                        <SidebarTrigger className="-ml-1" />
-                        <Separator
-                            orientation="vertical"
-                            className="mr-2 data-[orientation=vertical]:h-4"
-                        />
-
-                    </div>
-                </header>
-                <main className="m-1.5 sm:m-3 sm:mt-0  mt-0 bg-background border rounded-none overflow-y-auto  h-[calc(100vh-60px)]">
-                    <Outlet />
-
-                </main>
-
-            </SidebarInset>
+        // SidebarProvider must wrap everything that calls useSidebar() —
+        // SiteHeader's SidebarTrigger included. Its own wrapper div is a
+        // row by default (`flex`); `flex-col` here stacks [header, row]
+        // instead, so the header spans full width above the sidebar+content
+        // row rather than sitting beside it as a third column.
+        <SidebarProvider className="h-svh flex-col">
+            <SiteHeader />
+            {/* The sidebar's actual rail is `position:fixed; inset-y-0;
+                h-svh` (see ui/sidebar.tsx's "sidebar-container") — pinned to
+                the real viewport no matter where it sits in the DOM, which
+                is why reordering JSX alone couldn't put it "below" the
+                header. `[transform:translateZ(0)]` gives this div its own
+                containing block, so `fixed` descendants position relative
+                to IT instead of the viewport; `h-full` on AppSidebar
+                (below) then makes the rail fill exactly that box instead of
+                assuming 100svh. */}
+            <div className="relative bg-background-0 flex min-h-0 flex-1 [transform:translateZ(0)]">
+                <AppSidebar className="h-full border-none" />
+                <SidebarInset className="min-h-0 bg-background-0">
+                    <main className="min-h-0 flex-1 my-1 ml-0 m-1.5 bg-background border rounded-3xl overflow-y-auto">
+                        <Outlet />
+                    </main>
+                </SidebarInset>
+            </div>
         </SidebarProvider>
     )
 }

@@ -3,6 +3,7 @@ import { Wifi, Smartphone } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { Forfait } from "../types";
 import { formatData } from "@/shared/lib/format";
+import { Card } from "@/components/ui/card";
 
 interface ForfaitCardProps {
   forfait: Forfait;
@@ -18,14 +19,16 @@ export const InternetPlanCard: React.FC<ForfaitCardProps> = ({ forfait, selected
   const active = Boolean(forfait.active);
 
   return (
-    <div
+    <Card 
+    style={{
+  "--card-edge-color": selected ? "var(--primary)" : "var(--foreground)",
+  "--card-edge-line": selected ? "55%" : "20%",
+} as React.CSSProperties}
+
       onClick={() => onSelect?.(forfait)}
       className={cn(
         "group relative w-full overflow-hidden bg-card cursor-pointer rounded-lg border ",
         "transition-all duration-300 ease-out",
-        "hover:z-10 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-sm",
-        selected && "border-primary/40",
-        !active && (alwaysInteractive ? "opacity-60" : "opacity-50 pointer-events-none"),
         className
       )}
     >
@@ -55,6 +58,6 @@ export const InternetPlanCard: React.FC<ForfaitCardProps> = ({ forfait, selected
 
       </div>
       
-    </div>
+    </Card>
   );
 };

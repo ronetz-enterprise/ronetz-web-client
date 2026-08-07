@@ -15,8 +15,7 @@ export interface LoginRequest {
 export interface RegisterRequest {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  name: string;
 }
 
 /** Authenticated user, built from the provider's session claims. */

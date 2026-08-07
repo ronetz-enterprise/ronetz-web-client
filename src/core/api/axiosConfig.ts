@@ -29,11 +29,18 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (res) => res,
   (error) => {
-    // A 401 here means the backend rejected the current ID token (expired
-    // past what Firebase could silently refresh, revoked, disabled
-    // account...) — treat the session as dead rather than retrying it.
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      useAuthStore.getState().logout();
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      // A 401 means the backend rejected the current ID token outright (expired past what
+      // Firebase could silently refresh, malformed...) — the session is dead.
+      // A 403 is ambiguous on its own: it's also what a @PreAuthorize check returns when this
+      // user's role just doesn't cover *this one action* (session otherwise fine, must not log
+      // them out). FirebaseAuthenticationFilter tags the "your account was deactivated" case
+      // specifically with X-Auth-Error so we only log out for that, not every 403.
+      const accountDisabled = error.response?.headers?.["x-auth-error"] === "account-disabled";
+      if (status === 401 || (status === 403 && accountDisabled)) {
+        useAuthStore.getState().logout();
+      }
     }
     return Promise.reject(error);
   }

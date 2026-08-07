@@ -22,6 +22,8 @@ import RouteurListPage from '@/pages/admin-wifi/RouteurListPage';
 
 // Commerce (bc-commerce)
 import ForfaitListPage from '@/pages/admin-wifi/ForfaitListPage';
+import ForfaitDetailPage from '@/pages/admin-wifi/ForfaitDetailPage';
+import AdminHomePage from '@/pages/admin-wifi/AdminHomePage';
 import StatsPage from '@/pages/admin-wifi/StatsPage';
 
 // Wallet (bc-wallet)
@@ -113,9 +115,11 @@ function App() {
             
             {/* ADMIN-WIFI Specific */}
             <Route element={<ProtectedRoute allowedRoles={['ADMIN_WIFI']}><OutletProxy /></ProtectedRoute>}>
+               <Route path="/dashboard" element={<AdminHomePage />} />
                <Route path="/sites" element={<SiteListPage />} />
                <Route path="/routeurs" element={<RouteurListPage />} />
                <Route path="/forfaits" element={<ForfaitListPage />} />
+               <Route path="/forfaits/:id" element={<ForfaitDetailPage />} />
                <Route path="/stats" element={<StatsPage />} />
                <Route path="/wallet" element={<WalletPage />} />
             </Route>
@@ -148,7 +152,7 @@ function App() {
             initializing ? null : // Firebase restores the session async — avoid a flash redirect to /login
             user ? (
               user.role === 'CLIENT' ? <Navigate to="/home" replace /> :
-              user.role === 'ADMIN_WIFI' ? <Navigate to="/sites" replace /> :
+              user.role === 'ADMIN_WIFI' ? <Navigate to="/dashboard" replace /> :
               <Navigate to="/admin/users" replace />
             ) : <Navigate to="/login" replace />
           } />

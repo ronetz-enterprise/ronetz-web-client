@@ -11,7 +11,7 @@ interface KpiCardProps {
 
 export function KpiCard({ title, value, subtitle, icon: Icon, loading }: KpiCardProps) {
   return (
-    <Card className="ring-0 rounded-none bg-transparent">
+    <Card className="">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
