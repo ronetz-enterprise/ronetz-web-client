@@ -18,9 +18,9 @@ api.interceptors.request.use(async (config) => {
     if (token) {
       config.headers = config.headers ?? {};
       config.headers.Authorization = `Bearer ${token}`;
-
-      const tenantId = useAuthStore.getState().user?.tenantId;
-      if (tenantId) config.headers["X-Tenant-Id"] = tenantId;
+      // X-Tenant-Id used to be read by a couple of /api/users endpoints; the backend now
+      // resolves the caller's tenant itself (from TenantMembership, via the ID token) and
+      // no longer reads any incoming header for it — nothing left here to attach.
     }
   }
   return config;

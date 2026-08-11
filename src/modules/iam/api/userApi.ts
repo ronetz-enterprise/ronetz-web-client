@@ -14,8 +14,10 @@ export const userApi = {
     return res.data;
   },
 
-  grantToAdminWifi: async (id: string, tenantName: string) => {
-    await api.patch<string>(`/api/users/${id}/promote-admin-wifi`, tenantName, {
+  // Backend: PromoteUserCommand.organizationName (renamed from tenantName — the entity
+  // created here is an Organization, not "a tenant" in the generic RLS-partition sense).
+  grantToAdminWifi: async (id: string, organizationName: string) => {
+    await api.patch<string>(`/api/users/${id}/promote-admin-wifi`, organizationName, {
       headers: { 'Content-Type': 'text/plain' },
     });
   },

@@ -77,7 +77,7 @@ export function getForfaitColumns(actions: ForfaitTableActions = {}): ColumnDef<
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-9 rounded-lg text-muted-foreground hover:text-foreground"
+                                    className="h-2 w-9 rounded-lg text-muted-foreground hover:text-foreground"
                                     aria-label="Menu actions"
                                 >
                                     <MoreHorizontal className="h-4 w-4" />

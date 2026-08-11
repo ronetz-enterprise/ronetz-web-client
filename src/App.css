@@ -78,12 +78,12 @@
      on it always needs light text, whichever theme the rest of the app is
      in. Without this, text/icons here were inheriting the themed
      --foreground (near-black in light mode) onto a near-black surface. */
-  --back:#141414;
+  --back:#090909;
   --back-foreground: #f5f5f5;
   --card-foreground: #0d0d0d;
   --popover: #ffffff;
   --popover-foreground: #0d0d0d;
-  --primary: #419a3e;
+  --primary: #76c741;
   --primary-foreground: #ffffff;
   --secondary: #f3f3f4;
   --secondary-foreground: #0d0d0d;

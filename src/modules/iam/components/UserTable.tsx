@@ -9,7 +9,7 @@ interface UserTableProps {
   currentUserId: string;
   onDelete: (id: string) => void;
   onToggleStatus: (id: string) => void;
-  onGrantAdminWifi: (id: string, tenantName: string) => void;
+  onGrantAdminWifi: (id: string, organizationName: string) => void;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({

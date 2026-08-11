@@ -159,7 +159,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-3">
-        <Card className={cn("gap-0 overflow-hidden rounded-xl border p-0", className)}>
+        <Card className={cn("gap-0 overflow-hidden rounded-xl", className)}>
             {enableGlobalFilter && (
                 <>
                     <div className="px-4 ">

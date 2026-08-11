@@ -27,7 +27,7 @@ export type UserTableActions = {
   currentUserId: string;
   onDelete: (id: string) => void;
   onToggleStatus: (id: string) => void;
-  onGrantAdminWifi: (id: string, tenantName: string) => void;
+  onGrantAdminWifi: (id: string, organizationName: string) => void;
 };
 
 function PromoteDialog({
@@ -35,16 +35,16 @@ function PromoteDialog({
   onConfirm,
 }: {
   userId: string;
-  onConfirm: (id: string, tenantName: string) => void;
+  onConfirm: (id: string, organizationName: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [tenantName, setTenantName] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
 
   const handleConfirm = () => {
-    if (!tenantName.trim()) return;
-    onConfirm(userId, tenantName.trim());
+    if (!organizationName.trim()) return;
+    onConfirm(userId, organizationName.trim());
     setOpen(false);
-    setTenantName("");
+    setOrganizationName("");
   };
 
   return (
@@ -59,17 +59,17 @@ function PromoteDialog({
         Élever en ADMIN_WIFI
       </DropdownMenuItem>
 
-      <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setTenantName(""); }}>
+      <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setOrganizationName(""); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Élever en ADMIN_WIFI</DialogTitle>
           </DialogHeader>
           <div className="space-y-2 py-2">
-            <Label htmlFor="tenantName">Nom de l'entreprise</Label>
+            <Label htmlFor="organizationName">Nom de l'entreprise</Label>
             <Input
-              id="tenantName"
-              value={tenantName}
-              onChange={(e) => setTenantName(e.target.value)}
+              id="organizationName"
+              value={organizationName}
+              onChange={(e) => setOrganizationName(e.target.value)}
               placeholder="Ex: Acme Corp"
               onKeyDown={(e) => e.key === "Enter" && handleConfirm()}
               autoFocus
@@ -79,7 +79,7 @@ function PromoteDialog({
             <Button variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button onClick={handleConfirm} disabled={!tenantName.trim()}>
+            <Button onClick={handleConfirm} disabled={!organizationName.trim()}>
               Confirmer
             </Button>
           </DialogFooter>

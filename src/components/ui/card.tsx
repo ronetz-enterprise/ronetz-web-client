@@ -2,45 +2,29 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Bottom-weighted edge, same idea as the liquid-refract rim
-// (components/ui/glasscn/liquid-glass.tsx): a hairline that fades toward
-// the corners, plus a soft bloom underneath, instead of a flat outline.
-// Both layers read their color from --card-edge-color so the accent always
-// tracks whatever ring/border color the variant (or a consumer override)
-// sets — nothing here is hardcoded to a specific hue.
+// Bottom-weighted edge — the visual signature of the liquid-refract rim in
+// components/ui/glasscn/liquid-glass.tsx (a highlight that fades toward the
+// corners) borrowed as a plain ring + box-shadow, without any of the actual
+// glass machinery (no LiquidGlass wrapper, no backdrop-filter/blur, no
+// transparency). Card stays opaque and its color fully overridable.
 //
-// To recolor from outside, override the CSS var via the `style` prop (inline
-// style always wins over utility classes, unlike stacking another className):
+// --card-edge-color (default var(--foreground)) drives both the ambient
+// ring and the bottom accent, so recoloring one variable moves both. To
+// recolor from outside, override it via the `style` prop (inline style
+// always wins over utility classes, unlike stacking another className):
 //   <Card style={{ "--card-edge-color": "var(--primary)" } as React.CSSProperties} />
-// --card-edge-line / --card-edge-glow tune the accent's opacity if needed.
-const cardVariants = {
-  default: [
-    "bg-card ring-0.5 ring-(--card-edge-color)/10 [--card-edge-color:var(--foreground)]",
-    "shadow-[inset_0_-1px_0_0_color-mix(in_oklab,var(--card-edge-color)_var(--card-edge-line,14%),transparent),inset_0_-16px_24px_-18px_color-mix(in_oklab,var(--card-edge-color)_var(--card-edge-glow,8%),transparent)]",
-  ].join(" "),
-  outline: [
-    "bg-transparent border border-(--card-edge-color)/15 [--card-edge-color:var(--foreground)]",
-    "shadow-[inset_0_-1px_0_0_color-mix(in_oklab,var(--card-edge-color)_var(--card-edge-line,20%),transparent),inset_0_-16px_24px_-18px_color-mix(in_oklab,var(--card-edge-color)_var(--card-edge-glow,10%),transparent)]",
-  ].join(" "),
-}
-
+// --card-edge-line / --card-edge-glow tune the accent's opacity.
 function Card({
   className,
   size = "default",
-  variant = "default",
   ...props
-}: React.ComponentProps<"div"> & {
-  size?: "default" | "sm"
-  variant?: keyof typeof cardVariants
-}) {
+}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
   return (
     <div
       data-slot="card"
       data-size={size}
-      data-variant={variant}
       className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-xl py-4 text-sm text-card-foreground has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
-        cardVariants[variant],
+        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-(--card-edge-color)/10 [--card-edge-color:var(--foreground)] shadow-[inset_0_-1px_0_0_color-mix(in_oklab,var(--card-edge-color)_var(--card-edge-line,14%),transparent),inset_0_-16px_24px_-18px_color-mix(in_oklab,var(--card-edge-color)_var(--card-edge-glow,8%),transparent)] [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
         className
       )}
       {...props}
@@ -53,7 +37,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
         className
       )}
       {...props}
@@ -101,7 +85,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
+      className={cn("px-(--card-spacing)", className)}
       {...props}
     />
   )
@@ -112,7 +96,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "flex items-center rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/card:p-3",
+        "flex items-center rounded-b-xl border-t bg-muted/50 p-(--card-spacing)",
         className
       )}
       {...props}
