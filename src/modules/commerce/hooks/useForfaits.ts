@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { forfaitApi } from "@/modules/commerce/api/forfaitApi";
 import type { Forfait } from "../types";
-import type { CreateProductRequest } from "@/modules/commerce/api/forfaitApi";
+import type { CreateProductRequest, UpdateProductRequest } from "@/modules/commerce/api/forfaitApi";
 import { toast } from "sonner";
 
 export const useForfaits = (siteId:string|null) => {
@@ -28,6 +28,18 @@ export const useForfaits = (siteId:string|null) => {
       setForfaits((prev) => [...prev, res.data]);
     } catch {
       toast.error("Erreur lors de la création du forfait");
+    }
+  }, []);
+
+  const updateForfait = useCallback(async (id: string, data: UpdateProductRequest) => {
+    try {
+      const res = await forfaitApi.update(id, data);
+      toast.success("Forfait mis à jour");
+      setForfaits((prev) => prev.map((f) => (f.id === id ? res.data : f)));
+      return res.data;
+    } catch {
+      toast.error("Erreur lors de la mise à jour du forfait");
+      throw new Error("update-failed");
     }
   }, []);
 
@@ -62,6 +74,7 @@ export const useForfaits = (siteId:string|null) => {
     loading,
     refresh: fetchForfaits,
     createForfait,
+    updateForfait,
     deleteForfait,
     toggleForfaitActive,
   };

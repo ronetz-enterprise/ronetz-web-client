@@ -38,6 +38,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // sockjs-client (bc-notifications WebSocket transport, see useNotificationSocket) is a
+  // Node-oriented CJS package that references the bare `global` — undefined in a browser.
+  // Webpack shims this automatically; Vite/esbuild don't, hence the ReferenceError at
+  // runtime. Mapping it to `globalThis` (available in every modern browser) is the
+  // standard fix, without pulling in a full node-polyfills plugin for this one symbol.
+  define: {
+    global: "globalThis",
+  },
   optimizeDeps: {
     include: ["recharts"],
     rolldownOptions: {

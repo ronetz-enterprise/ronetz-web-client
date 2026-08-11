@@ -39,9 +39,9 @@ export const useUsers = () => {
     }
   };
 
-  const grantAdminWifi = async (id: string, tenantName: string) => {
+  const grantAdminWifi = async (id: string, organizationName: string) => {
     try {
-      await userApi.grantToAdminWifi(id, tenantName);
+      await userApi.grantToAdminWifi(id, organizationName);
       toast.success('Utilisateur promu ADMIN_WIFI');
       fetchUsers();
     } catch {

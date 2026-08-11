@@ -8,7 +8,6 @@ import { PackagePlus } from 'lucide-react';
 import { DataTable } from '@/shared/components/data-table';
 import { getForfaitColumns } from '@/modules/commerce/components/forfaitColumns';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { Forfait } from '@/modules/commerce/types';
 
 const ForfaitListPage: React.FC = () => {
@@ -16,17 +15,13 @@ const ForfaitListPage: React.FC = () => {
   const { forfaits, loading, createForfait, toggleForfaitActive } = useForfaits(null);
   const { user } = useAuthStore();
   const navigate = useNavigate();
-  const [statusTab, setStatusTab] = useState<'active' | 'inactive'>('active');
+  const [statusTab] = useState<'active' | 'inactive'>('active');
   const isAdminWifi = user?.role === 'ADMIN_WIFI';
 
   const visibleForfaits = forfaits.filter((f) => (statusTab === 'active' ? f.active : !f.active));
   const columns = getForfaitColumns({
     onToggleActive: isAdminWifi ? (id) => toggleForfaitActive(id) : undefined,
   });
-
-  const handleTabChange = (value: string) => {
-    setStatusTab(value as 'active' | 'inactive');
-  };
 
   const openForfait = (forfait: Forfait) => navigate(`/forfaits/${forfait.id}`);
 
@@ -47,14 +42,7 @@ const ForfaitListPage: React.FC = () => {
           <div className="h-full overflow-y-auto px-3 lg:px-5 py-6">
             {(loading || visibleForfaits.length > 0) ? (
               <div>
-                <div className="pb-8">
-                  <Tabs value={statusTab} onValueChange={handleTabChange}>
-                    <TabsList variant="line">
-                      <TabsTrigger value="active">Actifs</TabsTrigger>
-                      <TabsTrigger value="inactive">Inactifs</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
+                
 
                 <DataTable
                   columns={columns}

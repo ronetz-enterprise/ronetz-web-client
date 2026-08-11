@@ -10,6 +10,7 @@
 body {
   margin: 0;
   padding: 0;
+  
   box-sizing: border-box;
   font-family: var(--sans);
   background-color: oklch(0.985 0 0); /* Match sidebar background for seamless look */
