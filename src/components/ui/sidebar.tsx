@@ -2,20 +2,15 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Slot } from "radix-ui"
+import { Slot, Dialog as SheetPrimitive } from "radix-ui"
+import { useLocation } from "react-router-dom"
 
 import { useIsMobile } from "@/shared/hooks/use-mobile"
 import { cn } from "@/shared/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+import { Sheet, SheetPortal } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
@@ -27,9 +22,17 @@ import { PanelLeftIcon } from "lucide-react"
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "15rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
+// How far up from the screen bottom the mobile sidebar panel stops: not
+// above MobileBottomBar's floating pill (1rem gap + ~3.5rem tall, see
+// MOBILE_BOTTOMBAR_GAP in mobile-bottom-bar.tsx) but through its middle,
+// so the panel's edge visually cuts the pill in half — the bottom half
+// keeps poking out below the panel (the pill stacks above the panel, see
+// its z-index, so that half stays fully visible and clickable). Used in
+// inline styles, so plain CSS calc().
+const SIDEBAR_MOBILE_BOTTOMBAR_OFFSET =
+  "calc(2.75rem + env(safe-area-inset-bottom))"
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
@@ -163,6 +166,15 @@ function Sidebar({
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
+  // Mobile nav is a MobileBottomBar (see components/mobile-bottom-bar.tsx),
+  // not this sidebar — close the full-screen panel automatically once a
+  // route change confirms a link was picked.
+  const { pathname } = useLocation()
+  React.useEffect(() => {
+    setOpenMobile(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
+
   if (collapsible === "none") {
     return (
       <div
@@ -179,27 +191,64 @@ function Sidebar({
   }
 
   if (isMobile) {
+    // On phone the sidebar doesn't slide in from a side — it drops down
+    // from the top like a curtain, full width and almost full height,
+    // its bottom edge cutting through the middle of MobileBottomBar's
+    // floating pill (which stacks above it, see the pill's z-index) so
+    // the pill's toggle — now acting as a close button — stays visible
+    // and usable.
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-        <SheetContent
-          dir={dir}
-          data-sidebar="sidebar"
-          data-slot="sidebar"
-          data-mobile="true"
-          className="w-(--sidebar-width)  p-0 text-sidebar-foreground [&>button]:hidden"
-          style={
-            {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
-          }
-          side={side}
-        >
-          <SheetHeader className="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-          </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
-        </SheetContent>
+      // modal={false}: Radix's default modal behavior blocks pointer
+      // events on everything outside the dialog, which would make
+      // MobileBottomBar's own toggle unclickable while the panel is open.
+      <Sheet open={openMobile} onOpenChange={setOpenMobile} modal={false}>
+        <SheetPortal>
+          {/* A plain div, not Radix's Dialog.Overlay: that component
+              hard-codes `context.modal ? <OverlayImpl/> : null` — with
+              modal={false} above it never renders *anything*, which is
+              why no amount of overlay styling was ever taking effect.
+              SheetPortal still mounts/unmounts this on open/close and
+              portals it correctly on its own (it wraps every direct child
+              in <Presence present={open}><Portal>, regardless of modal).
+              Full-screen, not clipped to the panel's own bottom edge like
+              the panel itself is — otherwise the sliver of page below that
+              edge (around the pill) stays completely untouched: sharp,
+              undimmed, as if nothing were open there. The pill still reads
+              crisp on top thanks to its higher z-index (z-[60] > z-50
+              here), so this only touches the real page behind it. */}
+          <div
+            data-slot="sidebar-overlay"
+            aria-hidden
+            className="fixed inset-0 z-50 animate-in bg-black/20 fade-in-0 backdrop-blur-md duration-150"
+          />
+          <SheetPrimitive.Content
+            dir={dir}
+            data-sidebar="sidebar"
+            data-slot="sidebar"
+            data-mobile="true"
+            onOpenAutoFocus={(event) => event.preventDefault()}
+            style={
+              {
+                height: `calc(100dvh - ${SIDEBAR_MOBILE_BOTTOMBAR_OFFSET})`,
+              } as React.CSSProperties
+            }
+            className={cn(
+              "fixed inset-x-0 top-0 z-50 flex w-full flex-col bg-popover text-sidebar-foreground shadow-lg outline-hidden duration-200 ease-in-out",
+              "data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-top",
+              "data-closed:animate-out data-closed:fade-out-0 data-closed:slide-out-to-top",
+              className
+            )}
+            {...props}
+          >
+            <SheetPrimitive.Title className="sr-only">Sidebar</SheetPrimitive.Title>
+            <SheetPrimitive.Description className="sr-only">
+              Menu de navigation
+            </SheetPrimitive.Description>
+            <div className="flex h-full w-full flex-col overflow-y-auto">
+              {children}
+            </div>
+          </SheetPrimitive.Content>
+        </SheetPortal>
       </Sheet>
     )
   }

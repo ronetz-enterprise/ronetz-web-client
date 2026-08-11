@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
+import { MobileBottomBar } from "@/components/mobile-bottom-bar"
 import {
     SidebarInset,
     SidebarProvider,
@@ -32,6 +33,9 @@ export default function Page() {
                     </main>
                 </SidebarInset>
             </div>
+            {/* Mobile-only: replaces the sidebar with a floating icon pill
+                (toggle + search) — see MobileBottomBar and Sidebar's mobile branch. */}
+            <MobileBottomBar />
         </SidebarProvider>
     )
 }
