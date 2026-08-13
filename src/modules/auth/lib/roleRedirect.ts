@@ -4,7 +4,7 @@ import type { UserRole } from "@/shared/types";
 export function getDefaultPathForRole(role: UserRole): string {
   switch (role) {
     case "CLIENT":
-      return "/souscriptions";
+      return "/home";
     case "ADMIN_WIFI":
       return "/dashboard";
     case "SUPER_ADMIN":
