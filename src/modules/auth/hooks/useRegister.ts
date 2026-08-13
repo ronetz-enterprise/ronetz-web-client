@@ -18,7 +18,7 @@ export const useRegister = () => {
       // via authApi.onSessionChanged.
       await authApi.register(data);
       toast.success('Compte créé avec succès');
-      navigate('/souscriptions');
+      navigate('/home');
     } catch (error: unknown) {
       toast.error(getAuthErrorMessage(error, 'Erreur lors de la création du compte'));
       throw error;

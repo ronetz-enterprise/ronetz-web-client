@@ -55,7 +55,7 @@ const ConfirmationPage: React.FC = () => {
             Réessayer
           </Button>
           <Button variant="outline" onClick={() => navigate('/souscriptions')} className="w-full">
-            Mes souscriptions
+            Mes transactions
           </Button>
         </div>
       </div>
@@ -143,7 +143,7 @@ const ConfirmationPage: React.FC = () => {
         <div className="flex flex-col gap-2.5">
           <Button onClick={() => navigate('/souscriptions')} className="w-full">
             <Wifi className="mr-2 h-4 w-4" />
-            Mes souscriptions
+            Mes transactions
           </Button>
           <Button variant="outline" onClick={() => navigate('/acheter/' + subscription.siteId)} className="w-full">
             Acheter un autre forfait

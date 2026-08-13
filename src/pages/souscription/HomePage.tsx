@@ -1,27 +1,50 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMesSubscriptions } from '@/modules/commerce/hooks/useMesSubscriptions';
+import { useForfaits } from '@/modules/commerce/hooks/useForfaits';
 import { useMyTokens } from '@/modules/access-sessions/hooks/useMyTokens';
 import { TokenCredentialCard } from '@/modules/access-sessions/components/TokenCredentialCard';
-import { JetonCard } from '@/modules/access-sessions/components/JetonCard';
-import { Wifi, ShoppingBag, RefreshCw, Clock, KeyRound } from 'lucide-react';
+import { TransactionRow } from '@/modules/commerce/components/TransactionRow';
+import { Wifi, ShoppingBag, Receipt, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useNavigate } from 'react-router-dom';
 import { useTopologyStore } from '@/modules/network-ops/store/topologyStore';
 import { useAuthStore } from '@/modules/auth/store/authStore';
+import { Card } from '@/components/ui/card';
+
+// Accueil : grand message seul à gauche ; à droite, "Mes accès"
+// (TokenCredentialCard empilées, "Voir plus" pour déplier) puis les
+// dernières transactions, empilés. Le tout centré à l'écran.
+const ACCES_PREVIEW_COUNT = 4;
+const TRANSACTIONS_PREVIEW_COUNT = 4;
 
 const HomePage: React.FC = () => {
-  const { subscriptions, loading: subLoading, refresh: refreshSubs } = useMesSubscriptions();
-  const { tokens, loading: tokLoading, refresh: refreshTokens, revoke: revokeToken } = useMyTokens();
+  const { subscriptions, loading: subLoading } = useMesSubscriptions();
+  const { tokens, loading: tokLoading } = useMyTokens();
+  const { forfaits } = useForfaits(null);
   const navigate = useNavigate();
   const activeSiteId = useTopologyStore((s) => s.activeSiteId);
   const { user } = useAuthStore();
+  const [accesExpanded, setAccesExpanded] = useState(false);
 
   const loading = subLoading || tokLoading;
-  const refresh = () => { refreshSubs(); refreshTokens(); };
+  // SubscriptionDto only has a productId — resolve it against the forfaits
+  // catalog so TransactionRow can show "Achat du forfait <nom>" instead of a
+  // raw reference. Falls back to a generic label for deactivated products
+  // (forfaitApi.getAll only returns active ones) or while still loading.
+  const forfaitNameById = useMemo(
+    () => Object.fromEntries(forfaits.map((f) => [f.id, f.name])),
+    [forfaits]
+  );
 
-  const activeTokens = tokens.filter(t => t.status === 'ACTIVE');
-  const pending  = subscriptions.filter(s => s.status === 'PENDING');
+  const activeTokens = tokens.filter((t) => t.status === 'ACTIVE');
+  const accesVisible = accesExpanded ? activeTokens : activeTokens.slice(0, ACCES_PREVIEW_COUNT);
+  const accesHiddenCount = activeTokens.length - accesVisible.length;
+
+  // En attente d'abord — c'est l'état qui appelle le plus une action/attention de l'utilisateur.
+  const transactionsPreview = [...subscriptions]
+    .sort((a, b) => (a.status === 'PENDING' ? -1 : 0) - (b.status === 'PENDING' ? -1 : 0))
+    .slice(0, TRANSACTIONS_PREVIEW_COUNT);
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -33,73 +56,115 @@ const HomePage: React.FC = () => {
   const buyUrl = activeSiteId ? `/acheter/${activeSiteId}` : '/acheter';
 
   return (
-    <div className="space-y-0">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">
-            {greeting()}{user?.firstName ? `, ${user.firstName}` : ''} 👋
-          </h1>
-         
-        </div>
-        <Button variant="ghost" size="icon" onClick={refresh} title="Actualiser">
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-        </Button>
-      </div>
+    <div className="relative min-h-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/6 via-primary/2 to-transparent px-4 py-10 lg:px-8">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 -right-16 h-72 w-72 rounded-full bg-primary/10 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-(--accent-blue)/5 blur-3xl"
+      />
 
-      <div className="p-6 space-y-8">
-        {/* Active tokens with credentials */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold flex items-center gap-2">
-              <KeyRound className="h-4 w-4 text-primary" />
-              Mes identifiants WiFi
-            </h2>
-            <Button variant="default" size="sm" onClick={() => navigate(buyUrl)}>
-              <ShoppingBag className="mr-2 h-3.5 w-3.5" />
-              Acheter un forfait
-            </Button>
+      <div className="relative max-w-4xl w-full mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-10">
+          {/* Grand message — seul à gauche */}
+          <div className="flex flex-col items-start text-left gap-4">
+            <h1 className="text-4xl lg:text-5xl font-semibold tracking-tight ">
+              <span className="bg-gradient-to-r from-primary to-(--accent-blue) bg-clip-text text-transparent">
+                {greeting()}{user?.firstName ? ` ${user.firstName}` : ''}
+              </span>
+            </h1>
+            <p className="text-muted-foreground text-lg">Bienvenue sur Ronetz</p>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-              {[1, 2].map(i => <Skeleton key={i} className="h-36 rounded-lg" />)}
-            </div>
-          ) : activeTokens.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-              {activeTokens.map(t => <TokenCredentialCard key={t.id} token={t} onRevoke={revokeToken} />)}
-            </div>
-          ) : (
-            <div className="rounded-xl border border-dashed p-12 text-center space-y-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mx-auto">
-                <Wifi className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div className="space-y-1">
-                <p className="font-medium text-sm">Aucun accès WiFi actif</p>
-                <p className="text-sm text-muted-foreground">
-                  Achetez un forfait pour obtenir vos identifiants de connexion.
-                </p>
-              </div>
-              <Button size="sm" onClick={() => navigate(buyUrl)}>
-                <ShoppingBag className="mr-2 h-3.5 w-3.5" />
-                Voir les forfaits
-              </Button>
-            </div>
-          )}
-        </section>
+          {/* Tout le reste — accès (avec recherche) puis transactions, empilés à droite */}
+          <div className="flex flex-col gap-8 min-w-0">
+            {/* Mes accès */}
+            <section className="flex flex-col min-w-0">
+              <h2 className="text-sm font-medium text-muted-foreground mb-3">Mes accès</h2>
 
-        {/* Pending payments */}
-        {pending.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold flex items-center gap-2 mb-4">
-              <Clock className="h-4 w-4 text-(--accent-yellow)" />
-              En attente de confirmation ({pending.length})
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {pending.map(s => <JetonCard key={s.id} subscription={s} />)}
-            </div>
-          </section>
-        )}
+              {loading ? (
+                <div className="grid grid-cols-1 gap-3">
+                  {[1, 2].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}
+                </div>
+              ) : activeTokens.length === 0 ? (
+                <div className="rounded-xl border border-dashed bg-card/60 p-8 text-center space-y-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mx-auto">
+                    <Wifi className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-medium text-sm">Aucun accès WiFi actif</p>
+                    <p className="text-sm text-muted-foreground">
+                      Achetez un forfait pour obtenir vos identifiants de connexion.
+                    </p>
+                  </div>
+                  <Button size="sm" onClick={() => navigate(buyUrl)}>
+                    <ShoppingBag className="mr-2 h-3.5 w-3.5" />
+                    Voir les forfaits
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 gap-3">
+                    {accesVisible.map(t => <TokenCredentialCard key={t.id} token={t} />)}
+                  </div>
+                  {accesHiddenCount > 0 && (
+                    <div className="flex justify-center">
+                      <Button variant="ghost" size="sm" onClick={() => setAccesExpanded(true)}>
+                        Voir plus ({accesHiddenCount})
+                        <ChevronDown className="ml-1 h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* Transactions */}
+            <section className="flex flex-col min-w-0">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-medium text-muted-foreground">
+                  Transactions
+                </h2>
+                {subscriptions.length > 0 && (
+                  <Button variant="ghost" size="sm" onClick={() => navigate('/souscriptions')}>
+                    Voir tout
+                    <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
+
+              {loading ? (
+                <div className="rounded-lg border divide-y overflow-hidden">
+                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 m-3 rounded-md" />)}
+                </div>
+              ) : transactionsPreview.length > 0 ? (
+                <Card className="gap-0 p-0 divide-y divide-[#f0f0f0] overflow-hidden gap-0  cursor-pointer outline-none ring-[#f0f0f0] 
+">
+                  {transactionsPreview.map(s => (
+                    <TransactionRow
+                      key={s.id}
+                      transaction={s}
+                      productName={forfaitNameById[s.productId]}
+                      onClick={() => navigate(`/souscriptions/${s.id}`)}
+                    />
+                  ))}
+                </Card>
+              ) : (
+                <div className="rounded-xl border border-dashed bg-card/60 p-8 text-center space-y-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mx-auto">
+                    <Receipt className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-medium text-sm">Aucune transaction</p>
+                    <p className="text-sm text-muted-foreground">Achetez un forfait pour démarrer.</p>
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+        </div>
       </div>
     </div>
   );

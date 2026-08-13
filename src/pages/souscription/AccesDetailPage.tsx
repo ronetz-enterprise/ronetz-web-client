@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMyTokens } from "@/modules/access-sessions/hooks/useMyTokens";
-import { useMesSubscriptions } from "@/modules/commerce/hooks/useMesSubscriptions";
 import { tokenApi } from "@/modules/access-sessions/api/tokenApi";
-import type { TokenDto, TokenStatus, TokenUsageDto } from "@/modules/access-sessions/types";
+import type { TokenStatus, TokenUsageDto } from "@/modules/access-sessions/types";
+import { formatData, formatDuration } from "@/shared/lib/format";
 import {
-  formatData, formatDuration,
-} from "@/shared/lib/format";
-import {
-  Wifi, Copy, Eye, EyeOff, Unplug, Loader2, Database,
-  Smartphone, Timer, Clock, Users, RefreshCw, Activity,
+  ArrowLeft, Wifi, Copy, Eye, EyeOff, Unplug, Loader2, Database,
+  Smartphone, Timer, Clock, Users, Activity,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge, type StatusBadgeTone } from "@/shared/components/StatusBadge";
 import { cn } from "@/shared/lib/utils";
 import { toast } from "sonner";
+
+// Page dédiée à la description d'un accès (ex-panneau de détail de AccesSection, avant la
+// fusion en onglets — voir /mes-acces pour la liste). Un seul appel tokenApi.getUsage(id),
+// pas un fetch pour tous les tokens comme le faisait l'ancienne vue en split-pane.
 
 const tokenStatusConfig: Record<TokenStatus, { label: string; tone: StatusBadgeTone }> = {
   ACTIVE:          { label: "Actif",         tone: "success" },
@@ -26,13 +26,6 @@ const tokenStatusConfig: Record<TokenStatus, { label: string; tone: StatusBadgeT
   QUOTA_EXHAUSTED: { label: "Quota atteint", tone: "warning" },
   EXPIRED:         { label: "Expiré",        tone: "neutral" },
 };
-
-function expiryLabel(expiresAt: string): string {
-  const expiresDate = new Date(expiresAt);
-  if (expiresDate < new Date()) return "Expiré";
-  const daysLeft = Math.ceil((expiresDate.getTime() - Date.now()) / 86_400_000);
-  return `Expire dans ${daysLeft} j${daysLeft !== 1 ? "s" : ""}`;
-}
 
 function formatConsumed(bytes: number): string {
   return formatData(Math.round(bytes / (1024 * 1024)));
@@ -73,178 +66,89 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ title, children }) => (
   </div>
 );
 
-const MesAccesPage: React.FC = () => {
-  const { tokens, loading: tokLoading, refresh: refreshTokens, revoke } = useMyTokens();
-  const { loading: subLoading, refresh: refreshSubs } = useMesSubscriptions();
-  const [searchParams, setSearchParams] = useSearchParams();
+const AccesDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { tokens, loading: tokensLoading, revoke } = useMyTokens();
+  const [showPassword, setShowPassword] = useState(false);
+  const [usage, setUsage] = useState<TokenUsageDto | null>(null);
+  const [usageLoading, setUsageLoading] = useState(true);
 
-  const [selectedId, setSelectedId] = useState<string | null>(searchParams.get("token"));
-  const [usageMap, setUsageMap] = useState<Record<string, TokenUsageDto>>({});
-  const [usageFetching, setUsageFetching] = useState(false);
+  const token = tokens.find((t) => t.id === id) ?? null;
 
-  const loading = tokLoading || subLoading;
-  const refresh = () => { refreshTokens(); refreshSubs(); };
-
-  // Derive the effective selection: honor an explicit pick, else fall back to
-  // the first active token (or just the first one) once tokens are loaded.
-  const effectiveId = selectedId && tokens.some((t) => t.id === selectedId)
-    ? selectedId
-    : (tokens.find((t) => t.status === "ACTIVE") ?? tokens[0])?.id ?? null;
-
-  const selectToken = (id: string) => {
-    setSelectedId(id);
-    setSearchParams({ token: id }, { replace: true });
-  };
-
-  // Bulk-fetch consumption for every token so both the list rows and the
-  // details panel can show data usage without an extra round trip per click.
   useEffect(() => {
-    if (tokens.length === 0) return;
+    if (!id) return;
     let cancelled = false;
     const load = () => {
-      setUsageFetching(true);
-      Promise.allSettled(tokens.map((t) => tokenApi.getUsage(t.id)))
-        .then((results) => {
-          if (cancelled) return;
-          const next: Record<string, TokenUsageDto> = {};
-          results.forEach((r, i) => { if (r.status === "fulfilled") next[tokens[i].id] = r.value.data; });
-          setUsageMap(next);
-        })
-        .finally(() => { if (!cancelled) setUsageFetching(false); });
+      setUsageLoading(true);
+      tokenApi.getUsage(id)
+        .then(({ data }) => { if (!cancelled) setUsage(data); })
+        .catch(() => { if (!cancelled) setUsage(null); })
+        .finally(() => { if (!cancelled) setUsageLoading(false); });
     };
     load();
     return () => { cancelled = true; };
-  }, [tokens]);
-
-  const selectedToken = tokens.find((t) => t.id === effectiveId) ?? null;
-
-  return (
-    <div className="space-y-0 h-full flex flex-col">
-      <div className="flex items-center justify-between px-6 py-2 border-b">
-        <h1 className="text-xl font-semibold tracking-tight">Mes Accès</h1>
-        <Button variant="ghost" size="icon" onClick={refresh} title="Actualiser">
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-        </Button>
-      </div>
-
-      <div className=" grid grid-cols-1 lg:grid-cols-[400px_1fr]  items-start flex-1">
-        {/* Left column: token list + latest transactions */}
-        <div className="border-r h-full">
-          <div  className="ring-0 p-0 m-0">
-            
-              {tokLoading ? (
-                <div className="p-3 space-y-2">
-                  {[1, 2].map((i) => <Skeleton key={i} className="h-14 rounded-md" />)}
-                </div>
-              ) : tokens.length === 0 ? (
-                <p className="px-4 pb-4 text-sm text-muted-foreground">Aucun accès pour l'instant.</p>
-              ) : (
-                <div className="divide-y">
-                  {tokens.map((t) => {
-                    const isSelected = t.id === effectiveId;
-                    const tUsage = usageMap[t.id];
-                    const consumedLabel = tUsage ? formatConsumed(tUsage.consumedBytes) : usageFetching ? "…" : "0 Mo";
-                    return (
-                      <button
-                        key={t.id}
-                        onClick={() => selectToken(t.id)}
-                        className={cn(
-                          "w-full text-left px-4 py-3 flex items-center justify-between gap-3 transition-colors",
-                          isSelected ? "bg-primary/5  border-l-primary" : " hover:bg-muted/40"
-                        )}
-                      >
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <p className="text-sm font-semibold truncate leading-none">{t.siteName}</p>
-                          <div className="flex flex-col  gap-3 text-[11px] text-muted-foreground">
-                            <div className="flex items-end ">
-                              <Database className="h-3 w-" />
-                              <span className="text-[16px] h-[18px] font-semibold">{consumedLabel} </span>
-                              <span className=" h-[12px] ">/ {formatData(t.dataVolumeMb)}</span>
-                            </div>
-                            <div className="flex justify-end  gap-1">
-                              <Clock className="h-3 w-3" />
-                              {expiryLabel(t.expiresAt)}
-                            </div>
-                          </div>
-                        </div>
-                        {/* <StatusBadge tone={sc.tone} className="text-[10px] shrink-0">
-                          {sc.label}
-                        </StatusBadge> */}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-          </div>
-        </div>
-
-        {/* Right column: details panel */}
-        <TokenDetailsPanel
-          token={selectedToken}
-          usage={(effectiveId && usageMap[effectiveId]) || null}
-          usageLoading={usageFetching && !(effectiveId && effectiveId in usageMap)}
-          onRevoke={revoke}
-        />
-      </div>
-    </div>
-  );
-};
-
-interface TokenDetailsPanelProps {
-  token: TokenDto | null;
-  usage: TokenUsageDto | null;
-  usageLoading: boolean;
-  onRevoke: (id: string) => void;
-}
-
-const TokenDetailsPanel: React.FC<TokenDetailsPanelProps> = ({ token, usage, usageLoading, onRevoke }) => {
-  const [showPassword, setShowPassword] = useState(false);
+  }, [id]);
 
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copié !`);
   };
 
+  if (tokensLoading) {
+    return (
+      <div className="p-6 space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 rounded-lg" />
+      </div>
+    );
+  }
+
   if (!token) {
     return (
-      <Card size="sm" className="h-full ring-0">
-        <CardContent className="py-20 text-center space-y-3">
+      <div className="p-6 space-y-4">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/mes-acces")}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Retour
+        </Button>
+        <div className="py-20 text-center space-y-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-md border bg-muted mx-auto">
             <Activity className="h-5 w-5 text-muted-foreground" />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Sélectionnez un accès pour afficher ses détails.
-          </p>
-        </CardContent>
-      </Card>
+          <p className="text-sm text-muted-foreground">Cet accès est introuvable.</p>
+        </div>
+      </div>
     );
   }
 
   const sc = tokenStatusConfig[token.status] ?? tokenStatusConfig.ACTIVE;
   const expiresDate = new Date(token.expiresAt);
   const isExpired = expiresDate < new Date();
-  const daysLeft = Math.ceil((expiresDate.getTime() - Date.now()) / 86_400_000);
+  const daysLeft = Math.ceil((expiresDate.getTime() - new Date().getTime()) / 86_400_000);
   const percent = usage?.percentUsed ?? null;
   const barTone = percent === null ? "bg-primary" : percent >= 90 ? "bg-destructive" : percent >= 70 ? "bg-(--accent-yellow)" : "bg-primary";
 
   return (
-    <Card size="sm" className="ring-0 ">
-      <CardHeader className="border-b [.border-b]:pb-4">
-        <div className="flex items-center justify-between gap-3">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Wifi className="h-4 w-4 text-primary" />
+    <div>
+      <div className="flex items-center gap-3 px-6 py-4 border-b">
+        <Button variant="ghost" size="icon" onClick={() => navigate("/mes-acces")}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg font-semibold tracking-tight flex items-center gap-2 truncate">
+            <Wifi className="h-4 w-4 text-primary shrink-0" />
             {token.siteName}
-          </CardTitle>
-          <StatusBadge tone={sc.tone} className="text-[11px]">{sc.label}</StatusBadge>
+          </h1>
+          <p className="text-xs text-muted-foreground font-mono">{token.username}</p>
         </div>
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span className="font-mono">{token.username}</span>
-          <span>{isExpired ? "Expiré" : `Expire dans ${daysLeft} jour${daysLeft !== 1 ? "s" : ""}`}</span>
-        </div>
-      </CardHeader>
+        <StatusBadge tone={sc.tone} className="text-[11px] shrink-0">{sc.label}</StatusBadge>
+      </div>
 
-      <CardContent className="space-y-4">
-        {/* Ticket description + connection info */}
+      <div className="p-6 max-w-4xl space-y-4">
+        <p className="text-xs text-muted-foreground">
+          {isExpired ? "Expiré" : `Expire dans ${daysLeft} jour${daysLeft !== 1 ? "s" : ""}`}
+        </p>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <InfoPanel title="Forfait">
             <InfoRow icon={Database} label="Volume" value={formatData(token.dataVolumeMb)} />
@@ -285,7 +189,6 @@ const TokenDetailsPanel: React.FC<TokenDetailsPanelProps> = ({ token, usage, usa
           </InfoPanel>
         </div>
 
-        {/* Session history + remaining usage */}
         {usageLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -365,16 +268,15 @@ const TokenDetailsPanel: React.FC<TokenDetailsPanelProps> = ({ token, usage, usa
           </div>
         ) : null}
 
-        {/* Actions */}
         {token.status === "ACTIVE" && (
-          <div className="flex justify-end border-t pt-3">
+          <div className="flex justify-end border-t pt-4">
             <Button
               variant="ghost"
               size="sm"
               className="text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={() => {
                 if (window.confirm("Déconnecter cet accès WiFi ? Il ne sera plus utilisable.")) {
-                  onRevoke(token.id);
+                  revoke(token.id);
                 }
               }}
             >
@@ -383,9 +285,9 @@ const TokenDetailsPanel: React.FC<TokenDetailsPanelProps> = ({ token, usage, usa
             </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
-export default MesAccesPage;
+export default AccesDetailPage;

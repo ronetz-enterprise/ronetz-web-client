@@ -8,6 +8,8 @@ import { toast } from "sonner";
 interface JetonCardProps {
   subscription: SubscriptionDto;
   isHistory?: boolean;
+  /** Rend la card cliquable (voir SouscriptionsListPage/HomePage → page de description dédiée). */
+  onClick?: () => void;
 }
 
 const statusGradient: Record<SubscriptionStatus, string> = {
@@ -31,8 +33,9 @@ const statusLabel: Record<SubscriptionStatus, string> = {
   EXPIRED:   "Expiré",
 };
 
-export const JetonCard: React.FC<JetonCardProps> = ({ subscription, isHistory = false }) => {
-  const copy = (text: string, label: string) => {
+export const JetonCard: React.FC<JetonCardProps> = ({ subscription, isHistory = false, onClick }) => {
+  const copy = (e: React.MouseEvent, text: string, label: string) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(text);
     toast.success(`${label} copié !`);
   };
@@ -41,10 +44,15 @@ export const JetonCard: React.FC<JetonCardProps> = ({ subscription, isHistory = 
 
   return (
     <div
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") onClick(); } : undefined}
       className={cn(
         "group relative w-full aspect-[1.7] rounded-xl p-5",
         "overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg",
         "text-white bg-gradient-to-br",
+        onClick && "cursor-pointer",
         statusGradient[status]
       )}
     >
@@ -85,7 +93,7 @@ export const JetonCard: React.FC<JetonCardProps> = ({ subscription, isHistory = 
             </p>
           </div>
           <button
-            onClick={() => copy(tokenId ?? id, tokenId ? "Token" : "Référence")}
+            onClick={(e) => copy(e, tokenId ?? id, tokenId ? "Token" : "Référence")}
             className="shrink-0 p-1.5 rounded-md bg-white/10 hover:bg-white/20 transition"
             title="Copier"
           >

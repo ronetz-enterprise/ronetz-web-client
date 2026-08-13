@@ -30,12 +30,16 @@ import StatsPage from '@/pages/admin-wifi/StatsPage';
 import WalletPage from '@/pages/admin-wifi/WalletPage';
 
 // Souscription (agrégation commerce + payments + access-sessions)
+// HomePage montre : "Mes accès" (uniquement les accès actifs, "Voir plus" déplie en
+// place — pas de page liste séparée, voir AccesDetailPage pour le détail d'un accès) et
+// "Transactions" (list card, "Voir tout" vers SouscriptionsListPage/SouscriptionDetailPage).
 import ForfaitsAchatPage from '@/pages/souscription/ForfaitsAchatPage';
 import PaiementPage from '@/pages/souscription/PaiementPage';
 import ConfirmationPage from '@/pages/souscription/ConfirmationPage';
-import MesAccesPage from '@/pages/souscription/MesAccesPage';
-import MesSouscriptionsPage from '@/pages/souscription/MesSouscriptionsPage';
 import HomePage from '@/pages/souscription/HomePage';
+import AccesDetailPage from '@/pages/souscription/AccesDetailPage';
+import SouscriptionsListPage from '@/pages/souscription/SouscriptionsListPage';
+import SouscriptionDetailPage from '@/pages/souscription/SouscriptionDetailPage';
 
 // IAM (bc-iam) — users + profile
 import UserListPage from '@/pages/admin/UserListPage';
@@ -129,8 +133,9 @@ function App() {
                <Route path="/home" element={<HomePage />} />
                <Route path="/acheter" element={<AcheterRedirect />} />
                <Route path="/acheter/:siteId" element={<ForfaitsAchatPage />} />
-               <Route path="/mes-acces" element={<MesAccesPage />} />
-               <Route path="/souscriptions" element={<MesSouscriptionsPage />} />
+               <Route path="/mes-acces/:id" element={<AccesDetailPage />} />
+               <Route path="/souscriptions" element={<SouscriptionsListPage />} />
+               <Route path="/souscriptions/:id" element={<SouscriptionDetailPage />} />
             </Route>
 
             {/* SUPER_ADMIN Specific */}
@@ -144,10 +149,9 @@ function App() {
           </Route>
 
           {/* Default Redirects */}
-          {/* Note: kept as-is — CLIENT lands on /home here but on /souscriptions
-              right after login (useAuth) / on role-mismatch (ProtectedRoute).
-              Pre-existing inconsistency, not something this refactor should
-              silently resolve either way. */}
+          {/* CLIENT lands on /home here, right after login (roleRedirect) and on
+              role-mismatch (ProtectedRoute) alike — /souscriptions is reachable from there
+              via "Voir tout", it's no longer the post-login landing route. */}
           <Route path="/" element={
             initializing ? null : // Firebase restores the session async — avoid a flash redirect to /login
             user ? (

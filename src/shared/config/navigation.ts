@@ -6,12 +6,10 @@ import {
   ShoppingBag,
   Users,
   History,
-  Ticket,
   Flag,
   Wallet,
   BarChart2,
   WalletCards,
-  KeyRound,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -86,7 +84,8 @@ export const navigationConfig: NavItem[] = [
     icon: WalletCards,
     roles: ['ADMIN_WIFI'],
   },
-  // CLIENT
+  // CLIENT — Mes Accès et Mes Souscriptions ont été regroupées avec Accueil dans une
+  // seule page/route (/home, avec des onglets) : voir HomePage.tsx / App.tsx.
   {
     title: 'Accueil',
     href: '/home',
@@ -97,18 +96,6 @@ export const navigationConfig: NavItem[] = [
     title: 'Acheter un forfait',
     href: '/acheter',
     icon: ShoppingBag,
-    roles: ['CLIENT'],
-  },
-  {
-    title: 'Mes Accès',
-    href: '/mes-acces',
-    icon: KeyRound,
-    roles: ['CLIENT'],
-  },
-  {
-    title: 'Mes Souscriptions',
-    href: '/souscriptions',
-    icon: Ticket,
     roles: ['CLIENT'],
   },
 ];
