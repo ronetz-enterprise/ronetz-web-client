@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft, Info, ShieldCheck, Sparkles, Wifi } from "lucide-react";
+import { ArrowLeft, Info, LockKeyhole } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,68 +12,50 @@ const ForfaitsAchatPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="ronet-grid min-h-[calc(100vh-4rem)]">
-      <section className="border-b border-border/70">
-        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+    <main className="min-h-[calc(100vh-4rem)] bg-background">
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto max-w-6xl px-5 py-7 sm:px-8">
           <Button
             variant="ghost"
             size="sm"
-            className="-ml-2 mb-8"
+            className="-ml-2 mb-5"
             onClick={() => navigate(-1)}
           >
             <ArrowLeft className="size-4" aria-hidden="true" />
             Retour
           </Button>
 
-          <div className="grid items-end gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <div className="max-w-3xl">
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-                <Sparkles className="size-3.5" aria-hidden="true" />
-                Connexion simple, activation immédiate
-              </div>
-              <h1 className="max-w-2xl text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl">
-                Choisissez votre accès internet.
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                Choisir un forfait
               </h1>
-              <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
-                Comparez les durées et volumes disponibles, puis payez en toute sécurité.
-                Votre accès sera généré dès la confirmation.
+              <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+                Comparez les offres disponibles et sélectionnez celle qui vous convient.
               </p>
             </div>
-
-            <div className="ronet-surface flex items-start gap-3 p-4">
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <ShieldCheck className="size-4.5" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">Paiement protégé</p>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  Vos informations sont utilisées uniquement pour finaliser cet achat.
-                </p>
-              </div>
-            </div>
+            <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <LockKeyhole className="size-3.5" aria-hidden="true" />
+              Paiement sécurisé
+            </p>
           </div>
         </div>
-      </section>
+      </header>
 
-      <section className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
+      <section className="mx-auto max-w-6xl px-5 py-8 sm:px-8">
         {siteId ? (
           <>
             {!loading && forfaits.length > 0 && (
-              <div className="mb-6 flex items-center justify-between gap-4">
-                <p className="text-sm font-medium text-muted-foreground">
-                  {forfaits.length} forfait{forfaits.length > 1 ? "s" : ""} disponible{forfaits.length > 1 ? "s" : ""}
-                </p>
-                <div className="hidden items-center gap-2 text-xs font-medium text-muted-foreground sm:flex">
-                  <Wifi className="size-4 text-primary" aria-hidden="true" />
-                  Réseau du site détecté
-                </div>
-              </div>
+              <p className="mb-5 text-sm text-muted-foreground">
+                {forfaits.length} forfait{forfaits.length > 1 ? "s" : ""} disponible
+                {forfaits.length > 1 ? "s" : ""}
+              </p>
             )}
 
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {loading ? (
                 [1, 2, 3].map((item) => (
-                  <Skeleton key={item} className="h-[29rem] rounded-[1.35rem]" />
+                  <Skeleton key={item} className="h-60 rounded-lg" />
                 ))
               ) : forfaits.length > 0 ? (
                 forfaits.map((forfait) => (
@@ -100,11 +82,11 @@ const ForfaitsAchatPage: React.FC = () => {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="ronet-surface col-span-full mx-auto flex max-w-lg flex-col items-center px-6 py-14 text-center">
-      <div className="flex size-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-        <Info className="size-5" aria-hidden="true" />
+    <div className="col-span-full mx-auto w-full max-w-lg rounded-lg border border-border bg-card px-6 py-12 text-center">
+      <div className="mx-auto flex size-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+        <Info className="size-4" aria-hidden="true" />
       </div>
-      <h2 className="mt-5 text-lg font-semibold text-foreground">Connexion indisponible</h2>
+      <h2 className="mt-4 text-base font-semibold">Connexion indisponible</h2>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">{message}</p>
     </div>
   );
