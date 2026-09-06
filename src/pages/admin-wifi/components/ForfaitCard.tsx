@@ -9,8 +9,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { Forfait } from "@/features/forfaits/types";
-import { formatData, formatDuration } from "@/features/forfaits/utils";
+import type { Forfait } from "@/modules/commerce/types";
+import { formatData, formatDuration } from "@/shared/lib/format";
 import { cn } from "@/lib/utils";
 
 interface ForfaitCardProps {
@@ -108,7 +108,7 @@ export function ForfaitCard({
           <PlanMetric
             icon={Smartphone}
             label="Appareils"
-            value={String(forfait.deviceLimit)}
+            value={String(forfait.maxConcurrentDevices)}
           />
         </div>
 

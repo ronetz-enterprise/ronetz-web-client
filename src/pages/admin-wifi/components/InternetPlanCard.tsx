@@ -1,7 +1,7 @@
 import { Check, Clock3, Database, Smartphone, Wifi } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import type { Forfait } from "@/features/forfaits/types";
-import { formatData, formatDuration } from "@/features/forfaits/utils";
+import type { Forfait } from "@/modules/commerce/types";
+import { formatData, formatDuration } from "@/shared/lib/format";
 import { cn } from "@/lib/utils";
 
 interface InternetPlanCardProps {
@@ -106,7 +106,7 @@ export function InternetPlanCard({
                 Appareils
               </dt>
               <dd className="text-sm font-semibold text-foreground">
-                {forfait.deviceLimit}
+                {forfait.maxConcurrentDevices}
               </dd>
             </div>
           </dl>
