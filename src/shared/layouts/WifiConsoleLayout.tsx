@@ -20,7 +20,7 @@ export default function WifiConsoleLayout() {
           <div className="mx-auto w-full max-w-[1320px]"><Outlet /></div>
         </main>
       </SidebarInset>
-      <MobileBottomBar compact />
+      <MobileBottomBar />
     </SidebarProvider>
   )
 }

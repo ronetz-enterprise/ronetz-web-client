@@ -1,5 +1,5 @@
 import * as React from "react"
-import { PanelLeftClose, PanelLeftOpen, Settings } from "lucide-react"
+import { Settings } from "lucide-react"
 import { NavLink } from "react-router-dom"
 
 import {
@@ -9,7 +9,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    useSidebar,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/modules/auth/store/authStore"
 import { navigationConfig } from "@/shared/config/navigation"
@@ -33,8 +32,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavMain items={filterMain}></NavMain>
             </SidebarContent>
 
-            {/* Bottom of the sidebar: settings, then the collapse/expand
-                toggle right below it, per the requested layout. */}
+            {/* Settings at the bottom of the sidebar. */}
             <SidebarFooter>
                 <SidebarMenu className=" items-center justify-center flex flex-col gap-1 ">
                     <SidebarMenuItem>
@@ -49,20 +47,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
             </SidebarFooter>
         </Sidebar>
-    )
-}
-
-function SidebarCollapseButton() {
-    const { toggleSidebar, state } = useSidebar()
-    const collapsed = state === "collapsed"
-
-    return (
-        <SidebarMenuButton
-            tooltip={collapsed ? "Étendre la sidebar" : "Réduire la sidebar"}
-            onClick={toggleSidebar}
-        >
-            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-            <span>{collapsed ? "Étendre" : "Réduire"}</span>
-        </SidebarMenuButton>
     )
 }
