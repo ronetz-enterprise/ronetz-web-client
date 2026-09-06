@@ -1,163 +1,173 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { souscriptionApi } from '@/modules/commerce/api/souscriptionApi';
-import { paymentApi } from '@/modules/payments/api/paymentApi';
-import { paymentMethodApi } from '@/modules/payments/api/paymentMethodApi';
-import type { Forfait } from '@/modules/commerce/types';
-import type { PaymentMethod } from '@/modules/payments/types';
-import { formatAmount, formatData, formatDuration } from '@/shared/lib/format';
-import { ArrowLeft, CreditCard, Clock, Database, Smartphone, Check, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
-import { useAuthStore } from '@/modules/auth/store/authStore';
-import { usePaymentStepper } from '@/modules/payments/hooks/usePaiemetStepper';
-import { MethodStep } from '@/modules/payments/components/methodStep';
-import { PhoneStep } from '@/modules/payments/components/phoneStep';
-import { StepIndicator } from '@/modules/commerce/components/stepIndicator';
-import { StepTransition } from '@/modules/commerce/components/stepTransition';
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Check,
+  Clock3,
+  CreditCard,
+  Database,
+  Loader2,
+  LockKeyhole,
+  Smartphone,
+  Wifi,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { useAuthStore } from "@/modules/auth/store/authStore";
+import { souscriptionApi } from "@/modules/commerce/api/souscriptionApi";
+import { StepIndicator } from "@/modules/commerce/components/stepIndicator";
+import { StepTransition } from "@/modules/commerce/components/stepTransition";
+import type { Forfait } from "@/modules/commerce/types";
+import { paymentApi } from "@/modules/payments/api/paymentApi";
+import { MethodStep } from "@/modules/payments/components/methodStep";
+import { PhoneStep } from "@/modules/payments/components/phoneStep";
+import { usePaymentStepper } from "@/modules/payments/hooks/usePaiemetStepper";
+import { paymentMethodApi } from "@/modules/payments/api/paymentMethodApi";
+import type { PaymentMethod } from "@/modules/payments/types";
+import { formatAmount, formatData, formatDuration } from "@/shared/lib/format";
 
 interface LocationState {
   product: Forfait;
   siteId: string;
 }
 
-const isValidPhone = (p: string) => /^[0-9]{8,15}$/.test(p.trim());
-const toE164 = (p: string, countryCode = '237') => `+${countryCode}${p.replace(/\s/g, '').trim()}`;
+const isValidPhone = (phone: string) => /^[0-9]{8,15}$/.test(phone.trim());
+const toE164 = (phone: string, countryCode = "237") =>
+  "+" + countryCode + phone.replace(/\s/g, "").trim();
 
 const PaiementPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as LocationState | null;
+  const user = useAuthStore((store) => store.user);
+  const { currentStep, goToNextStep, goToPreviousStep, isFirstStep } =
+    usePaymentStepper();
 
-  const user = useAuthStore((s) => s.user);
-  const { currentStep, goToNextStep, goToPreviousStep, isFirstStep } = usePaymentStepper();
-  const [selectedMethod, setSelectedMethod] = useState('');
-  const [phone, setPhone] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState("");
+  const [phone, setPhone] = useState("");
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
   const [methodsLoading, setMethodsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    const countryCode = user?.countryCode ?? 'CM';
-    paymentMethodApi.getByCountry(countryCode)
+    const countryCode = user?.countryCode ?? "CM";
+    paymentMethodApi
+      .getByCountry(countryCode)
       .then(setMethods)
-      .catch(() => toast.error('Impossible de charger les méthodes de paiement'))
+      .catch(() => toast.error("Impossible de charger les méthodes de paiement"))
       .finally(() => setMethodsLoading(false));
   }, [user?.countryCode]);
 
   if (!state?.product || !state?.siteId) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center p-10 bg-background text-foreground">
-        <p className="text-sm text-muted-foreground">Aucun forfait sélectionné</p>
-        <Button variant="outline" onClick={() => navigate(-1)}>Retour</Button>
-      </div>
+      <main className="ronet-grid flex min-h-screen items-center justify-center p-6">
+        <div className="ronet-surface max-w-md p-8 text-center">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+            <Wifi className="size-5" aria-hidden="true" />
+          </div>
+          <h1 className="mt-5 text-xl font-semibold">Aucun forfait sélectionné</h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Revenez à la liste des offres pour choisir votre accès internet.
+          </p>
+          <Button variant="outline" className="mt-6" onClick={() => navigate(-1)}>
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            Retour aux forfaits
+          </Button>
+        </div>
+      </main>
     );
   }
 
   const { product, siteId } = state;
-  const selectedMethodObj = methods.find(m => m.code === selectedMethod);
+  const selectedMethodObj = methods.find(
+    (method) => method.code === selectedMethod
+  );
 
   const canGoNext = () => {
-    if (currentStep === 'method') return !!selectedMethod;
-    if (currentStep === 'phone') return isValidPhone(phone);
+    if (currentStep === "method") return Boolean(selectedMethod);
+    if (currentStep === "phone") return isValidPhone(phone);
     return false;
   };
 
   const handlePay = async () => {
     setIsProcessing(true);
     try {
-      const { data: subscription } = await souscriptionApi.create({ productId: product.id, siteId });
+      const { data: subscription } = await souscriptionApi.create({
+        productId: product.id,
+        siteId,
+      });
       const { data: payment } = await paymentApi.initiate({
         subscriptionId: subscription.id,
         amount: product.price,
         currency: product.currency,
         paymentMethodCode: selectedMethod,
         phoneE164: toE164(phone),
-        email: user?.email ?? '',
-        fullName: [user?.firstName, user?.lastName].filter(Boolean).join(' '),
+        email: user?.email ?? "",
+        fullName: [user?.firstName, user?.lastName].filter(Boolean).join(" "),
       });
 
       if (payment.paymentLink) {
         window.location.assign(payment.paymentLink);
       } else {
-        navigate('/confirmation', { replace: true, state: { success: true, product, subscription } });
+        navigate("/confirmation", {
+          replace: true,
+          state: { success: true, product, subscription },
+        });
       }
     } catch {
-      navigate('/confirmation', { replace: true, state: { success: false } });
+      navigate("/confirmation", {
+        replace: true,
+        state: { success: false },
+      });
     }
   };
 
   if (isProcessing) {
     return (
-      <div className="fixed inset-0 bg-background text-foreground flex flex-col items-center justify-center gap-6 z-50">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <div className="text-center space-y-1">
-          <p className="font-medium">Traitement en cours</p>
-          <p className="text-sm text-muted-foreground">Veuillez patienter pendant l'initiation du paiement…</p>
+      <div
+        className="ronet-grid fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background p-6 text-foreground"
+        aria-live="polite"
+      >
+        <div className="relative flex size-20 items-center justify-center rounded-full border border-primary/15 bg-primary/10">
+          <Loader2 className="size-8 animate-spin text-primary" aria-hidden="true" />
+        </div>
+        <div className="max-w-sm text-center">
+          <p className="text-lg font-semibold">Traitement sécurisé en cours</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Gardez cette page ouverte pendant l’initiation du paiement.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b bg-background sticky top-0 z-10">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => isFirstStep ? navigate(-1) : goToPreviousStep()}
-          className="shrink-0"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex-1">
-          <StepIndicator currentStep={currentStep} />
-        </div>
-      </div>
-
-      <div className="flex-1 max-w-md mx-auto w-full px-4 py-6 flex flex-col gap-6">
-        {/* Forfait summary */}
-        <div className="rounded-lg border bg-card p-4 space-y-3">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Forfait sélectionné
-          </p>
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="font-semibold truncate">{product.name}</p>
-              {product.description && (
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">{product.description}</p>
-              )}
-            </div>
-            <div className="text-right shrink-0">
-              <p className="text-lg font-bold text-primary">
-                {new Intl.NumberFormat('fr-FR').format(product.price)}
-              </p>
-              <p className="text-xs text-muted-foreground uppercase">{product.currency}</p>
-            </div>
+    <main className="ronet-grid min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-20 border-b border-border/70 bg-background/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4 sm:px-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => (isFirstStep ? navigate(-1) : goToPreviousStep())}
+            aria-label="Revenir à l’étape précédente"
+          >
+            <ArrowLeft className="size-4" aria-hidden="true" />
+          </Button>
+          <div className="min-w-0 flex-1">
+            <StepIndicator currentStep={currentStep} />
           </div>
-          <Separator />
-          <div className="flex gap-4">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Clock className="h-3 w-3 shrink-0" />
-              {formatDuration(product.durationMinutes)}
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Database className="h-3 w-3 shrink-0" />
-              {formatData(product.dataVolumeMb)}
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Smartphone className="h-3 w-3 shrink-0" />
-              {product.maxConcurrentDevices} app.
-            </div>
+          <div className="hidden items-center gap-2 text-xs font-semibold text-muted-foreground sm:flex">
+            <LockKeyhole className="size-4 text-primary" aria-hidden="true" />
+            Paiement sécurisé
           </div>
         </div>
+      </header>
 
-        {/* Step content */}
-        <div className="flex-1">
+      <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:py-12">
+        <section className="ronet-surface order-2 min-w-0 p-5 sm:p-7 lg:order-1">
           <StepTransition currentStep={currentStep}>
-            {currentStep === 'method' && (
+            {currentStep === "method" && (
               <MethodStep
                 selectedProvider={selectedMethod}
                 onProviderChange={setSelectedMethod}
@@ -165,59 +175,149 @@ const PaiementPage: React.FC = () => {
                 isLoading={methodsLoading}
               />
             )}
-            {currentStep === 'phone' && (
+
+            {currentStep === "phone" && (
               <PhoneStep
                 phone={phone}
                 onPhoneChange={setPhone}
                 providerName={selectedMethodObj?.name ?? selectedMethod}
               />
             )}
-            {currentStep === 'confirmation' && (
-              <div className="space-y-4">
-                <div>
-                  <h2 className="font-semibold">Confirmer le paiement</h2>
-                  <p className="text-sm text-muted-foreground">Vérifiez les informations avant de procéder</p>
-                </div>
-                <div className="space-y-2">
+
+            {currentStep === "confirmation" && (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                  Dernière étape
+                </p>
+                <h1 className="mt-2 text-2xl font-semibold tracking-tight">
+                  Vérifiez votre paiement
+                </h1>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Confirmez les informations avant de générer votre accès.
+                </p>
+
+                <div className="mt-7 space-y-3">
                   {[
-                    { label: 'Forfait', value: product.name },
-                    { label: 'Méthode', value: selectedMethodObj?.name ?? selectedMethod },
-                    { label: 'Numéro', value: toE164(phone) },
+                    { label: "Forfait", value: product.name },
+                    {
+                      label: "Méthode",
+                      value: selectedMethodObj?.name ?? selectedMethod,
+                    },
+                    { label: "Numéro", value: toE164(phone) },
                   ].map(({ label, value }) => (
-                    <div key={label} className="flex items-center gap-3 px-4 py-3 rounded-lg border bg-muted/30">
-                      <Check className="h-3.5 w-3.5 text-primary shrink-0" />
-                      <span className="text-sm text-muted-foreground flex-1">{label}</span>
-                      <span className="text-sm font-medium truncate max-w-40">{value}</span>
+                    <div
+                      key={label}
+                      className="flex items-center gap-3 rounded-xl border border-border/70 bg-muted/35 px-4 py-3.5"
+                    >
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Check className="size-3.5" aria-hidden="true" />
+                      </span>
+                      <span className="flex-1 text-sm text-muted-foreground">
+                        {label}
+                      </span>
+                      <span className="max-w-48 truncate text-sm font-semibold">
+                        {value}
+                      </span>
                     </div>
                   ))}
-                  <div className="flex items-center justify-between px-4 py-4 rounded-lg border border-primary/20 bg-primary/5">
-                    <span className="font-medium text-sm">Total à payer</span>
-                    <span className="text-lg font-bold text-primary">
-                      {formatAmount(product.price, product.currency)}
-                    </span>
-                  </div>
                 </div>
               </div>
             )}
           </StepTransition>
-        </div>
 
-        {/* Action */}
-        <div className="pb-4">
-          {currentStep !== 'confirmation' ? (
-            <Button onClick={goToNextStep} disabled={!canGoNext()} className="w-full">
-              Suivant
-            </Button>
-          ) : (
-            <Button onClick={handlePay} className="w-full">
-              <CreditCard className="mr-2 h-4 w-4" />
-              Payer {formatAmount(product.price, product.currency)}
-            </Button>
-          )}
-        </div>
+          <div className="mt-8 border-t border-border/70 pt-5">
+            {currentStep !== "confirmation" ? (
+              <Button
+                onClick={goToNextStep}
+                disabled={!canGoNext()}
+                size="lg"
+                className="w-full sm:w-auto sm:min-w-44"
+              >
+                Continuer
+              </Button>
+            ) : (
+              <Button
+                onClick={handlePay}
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                <CreditCard className="size-4" aria-hidden="true" />
+                Payer {formatAmount(product.price, product.currency)}
+              </Button>
+            )}
+          </div>
+        </section>
+
+        <aside className="order-1 lg:order-2">
+          <div className="ronet-plan ronet-surface sticky top-24 overflow-hidden p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              Votre forfait
+            </p>
+            <div className="mt-4 flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h2 className="truncate text-lg font-semibold">{product.name}</h2>
+                {product.description && (
+                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
+                    {product.description}
+                  </p>
+                )}
+              </div>
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <Wifi className="size-4.5" aria-hidden="true" />
+              </div>
+            </div>
+
+            <Separator className="my-5" />
+
+            <dl className="space-y-3.5">
+              <SummaryRow
+                icon={Clock3}
+                label="Durée"
+                value={formatDuration(product.durationMinutes)}
+              />
+              <SummaryRow
+                icon={Database}
+                label="Données"
+                value={formatData(product.dataVolumeMb)}
+              />
+              <SummaryRow
+                icon={Smartphone}
+                label="Appareils"
+                value={String(product.maxConcurrentDevices)}
+              />
+            </dl>
+
+            <div className="mt-6 flex items-end justify-between gap-4 rounded-xl bg-foreground px-4 py-4 text-background">
+              <span className="text-sm font-medium opacity-70">Total</span>
+              <span className="text-xl font-semibold">
+                {formatAmount(product.price, product.currency)}
+              </span>
+            </div>
+          </div>
+        </aside>
       </div>
-    </div>
+    </main>
   );
 };
+
+function SummaryRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <dt className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Icon className="size-4 text-primary" aria-hidden="true" />
+        {label}
+      </dt>
+      <dd className="text-sm font-semibold">{value}</dd>
+    </div>
+  );
+}
 
 export default PaiementPage;
