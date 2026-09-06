@@ -69,7 +69,7 @@
  * par le bouton (voir components/ui/button.tsx) pour un rendu pilule.
  */
 :root {
-  --background: #f4f4f4;
+  --background: #fff;
   --foreground: #0d0d0d;
   --card: #ffffff;
   /* --back is a fixed dark chrome surface (header bar, sidebar backdrop) —
@@ -78,8 +78,8 @@
      on it always needs light text, whichever theme the rest of the app is
      in. Without this, text/icons here were inheriting the themed
      --foreground (near-black in light mode) onto a near-black surface. */
-  --back:#090909;
-  --back-foreground: #f5f5f5;
+  --back:#f5f5f5;
+  --back-foreground: #171717;
   --card-foreground: #0d0d0d;
   --popover: #ffffff;
   --popover-foreground: #0d0d0d;
@@ -103,13 +103,13 @@
   --chart-5: oklch(0.269 0 0);
   --radius: 0.5rem;
   --radius-btn: 0.5rem;
-  --sidebar: #e4e4e4;
+  --sidebar: #ffffff00;
   --sidebar-foreground: #3d3d3d;
   --sidebar-primary: #0d0d0d;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #0d0d0d;
-  --sidebar-border: #e5e5e5;
+  --sidebar-accent: #deebe0;
+  --sidebar-accent-foreground: #128a1e;
+  --sidebar-border: #e5e5e500;
   --sidebar-ring: #0d0d0d;
 
   /* Accents de statut — jamais utilisés comme couleur de bouton principal */
@@ -143,7 +143,7 @@
   --destructive-foreground: #f5f5f5;
   --border: #272525;
   --input: #333333;
-  --ring: #f5f5f5;
+  --ring: #fafafa;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);

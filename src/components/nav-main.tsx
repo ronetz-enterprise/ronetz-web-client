@@ -22,9 +22,9 @@ export function NavMain({
     const { pathname } = useLocation()
 
     return (
-        <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-            <SidebarMenu>
+        <SidebarGroup className="p-0">
+          
+            <SidebarMenu className= " p-0 bg-white py-3 rounded-3xl border items-center justify-center flex flex-col gap-1">
                 {items.map((item) => (
 
                     <SidebarMenuItem key={item.url} >
@@ -36,7 +36,7 @@ export function NavMain({
 
                             >
                                 <item.icon className="w-4 h-4" />
-                                <span>{item.title}</span>
+                                
                             </NavLink>
 
                         </SidebarMenuButton>

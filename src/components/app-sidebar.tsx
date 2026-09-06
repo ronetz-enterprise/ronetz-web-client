@@ -28,7 +28,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         }))
 
     return (
-        <Sidebar collapsible="icon" variant="floating"  {...props}>
+        <Sidebar collapsible="icon" variant="floating" className=" "  {...props} >
             <SidebarContent className="">
                 <NavMain items={filterMain}></NavMain>
             </SidebarContent>
@@ -36,18 +36,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {/* Bottom of the sidebar: settings, then the collapse/expand
                 toggle right below it, per the requested layout. */}
             <SidebarFooter>
-                <SidebarMenu>
+                <SidebarMenu className=" items-center justify-center flex flex-col gap-1 ">
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild tooltip="Paramètres">
                             <NavLink to="/profile">
                                 <Settings className="h-4 w-4" />
-                                <span>Paramètres</span>
+                                
                             </NavLink>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarCollapseButton />
-                    </SidebarMenuItem>
+                    
                 </SidebarMenu>
             </SidebarFooter>
         </Sidebar>

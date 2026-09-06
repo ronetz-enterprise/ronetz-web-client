@@ -10,7 +10,6 @@ export function SiteHeader() {
             <div className="flex items-end  gap-2">
                 <img src={icon} alt="" className="h-6" />
 
-                <span className="font-bold text-[20px] leading-none ">Ronetz</span>
             </div>
 
             <div className="flex items-center gap-1">
