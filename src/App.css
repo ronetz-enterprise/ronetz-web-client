@@ -41,96 +41,94 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: .5rem;
-  --radius-md: .75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 2rem;
+  --radius-sm: .375rem;
+  --radius-md: .5rem;
+  --radius-lg: .75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
 }
 
 :root {
-  --background: #f6f8f6;
-  --foreground: #142019;
+  --background: #f7f8fa;
+  --foreground: #18202c;
   --card: #ffffff;
-  --card-foreground: #142019;
+  --card-foreground: #18202c;
   --popover: #ffffff;
-  --popover-foreground: #142019;
-  --primary: #287a50;
+  --popover-foreground: #18202c;
+  --primary: #455a86;
   --primary-foreground: #ffffff;
-  --secondary: #edf3ef;
-  --secondary-foreground: #183326;
-  --muted: #f0f4f1;
-  --muted-foreground: #68766e;
-  --accent: #e4efe8;
-  --accent-foreground: #1d5b3d;
-  --destructive: #c83f4d;
-  --border: #dfe7e2;
-  --input: #d8e2dc;
-  --ring: #287a50;
-  --brand-ink: #0a1711;
-  --brand-mist: #eef7f1;
-  --brand-lime: #a8d65e;
-  --brand-aqua: #71c8b1;
-  --warning: #ad7416;
-  --warning-soft: #fff5dc;
-  --info: #356aa8;
-  --info-soft: #eaf2fb;
-  --chart-1: #287a50;
-  --chart-2: #71c8b1;
-  --chart-3: #a8d65e;
-  --chart-4: #7f9d8d;
-  --chart-5: #d6e4db;
-  --radius: .75rem;
-  --radius-btn: .75rem;
-  --sidebar: #0a1711;
-  --sidebar-foreground: #d8e5dc;
-  --sidebar-primary: #a8d65e;
-  --sidebar-primary-foreground: #102018;
-  --sidebar-accent: #14271d;
-  --sidebar-accent-foreground: #f4fbf6;
-  --sidebar-border: #21372b;
-  --sidebar-ring: #a8d65e;
+  --secondary: #f0f2f6;
+  --secondary-foreground: #293448;
+  --muted: #f2f4f7;
+  --muted-foreground: #687386;
+  --accent: #e9edf5;
+  --accent-foreground: #35466d;
+  --destructive: #c2414d;
+  --border: #e1e5eb;
+  --input: #d7dce5;
+  --ring: #566d9f;
+  --brand-ink: #171d28;
+  --brand-mist: #f6f7fa;
+  --warning: #a66c16;
+  --warning-soft: #fff7e8;
+  --info: #446a9b;
+  --info-soft: #edf3fa;
+  --chart-1: #455a86;
+  --chart-2: #7182a6;
+  --chart-3: #98a5bd;
+  --chart-4: #b7c0cf;
+  --chart-5: #d8dde6;
+  --radius: .625rem;
+  --radius-btn: .5rem;
+  --sidebar: #1b2230;
+  --sidebar-foreground: #dce1e9;
+  --sidebar-primary: #aab8da;
+  --sidebar-primary-foreground: #18202c;
+  --sidebar-accent: #272f40;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #313a4c;
+  --sidebar-ring: #91a3ce;
 }
 
 .dark {
-  --background: #0d1511;
-  --foreground: #eef5f0;
-  --card: #121e17;
-  --card-foreground: #eef5f0;
-  --popover: #16241b;
-  --popover-foreground: #eef5f0;
-  --primary: #83c99f;
-  --primary-foreground: #0b1c12;
-  --secondary: #1b2a21;
-  --secondary-foreground: #e9f2ec;
-  --muted: #17251d;
-  --muted-foreground: #a7b7ad;
-  --accent: #20352a;
-  --accent-foreground: #b8e2c8;
-  --destructive: #ef7180;
-  --border: #26392e;
-  --input: #30463a;
-  --ring: #83c99f;
-  --brand-ink: #07100b;
-  --brand-mist: #edf7f0;
-  --warning: #e6b85f;
-  --warning-soft: #352b16;
-  --info: #8db8ea;
-  --info-soft: #16283b;
-  --chart-1: #83c99f;
-  --chart-2: #71c8b1;
-  --chart-3: #b9db78;
-  --chart-4: #8ca89a;
-  --chart-5: #40584b;
-  --sidebar: #07100b;
-  --sidebar-foreground: #d7e5dc;
-  --sidebar-primary: #a8d65e;
-  --sidebar-primary-foreground: #0b1c12;
-  --sidebar-accent: #15271c;
-  --sidebar-accent-foreground: #f1f8f3;
-  --sidebar-border: #20352a;
-  --sidebar-ring: #a8d65e;
+  --background: #11151c;
+  --foreground: #edf0f5;
+  --card: #181d26;
+  --card-foreground: #edf0f5;
+  --popover: #1c222d;
+  --popover-foreground: #edf0f5;
+  --primary: #9aadd9;
+  --primary-foreground: #151b27;
+  --secondary: #222935;
+  --secondary-foreground: #e7ebf2;
+  --muted: #202631;
+  --muted-foreground: #a4adbc;
+  --accent: #293247;
+  --accent-foreground: #d2dcf1;
+  --destructive: #ed7781;
+  --border: #2d3542;
+  --input: #394352;
+  --ring: #9aadd9;
+  --brand-ink: #0d1118;
+  --brand-mist: #f4f6fa;
+  --warning: #deb260;
+  --warning-soft: #332918;
+  --info: #8eadd2;
+  --info-soft: #1b293a;
+  --chart-1: #9aadd9;
+  --chart-2: #7f91b8;
+  --chart-3: #697894;
+  --chart-4: #566174;
+  --chart-5: #3e4654;
+  --sidebar: #121720;
+  --sidebar-foreground: #d9dee7;
+  --sidebar-primary: #aab8da;
+  --sidebar-primary-foreground: #141a24;
+  --sidebar-accent: #222a38;
+  --sidebar-accent-foreground: #f4f6fa;
+  --sidebar-border: #2d3646;
+  --sidebar-ring: #91a3ce;
 }
 
 @layer base {
@@ -140,39 +138,33 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
-  ::selection { background: color-mix(in srgb, var(--primary) 22%, transparent); }
+  ::selection { background: color-mix(in srgb, var(--primary) 18%, transparent); }
   :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 }
 
 @layer utilities {
   .ronet-surface {
-    background: color-mix(in srgb, var(--card) 96%, var(--primary) 4%);
+    background: var(--card);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 2px rgb(20 32 25 / .03), 0 12px 32px rgb(20 32 25 / .035);
+    box-shadow: 0 1px 2px rgb(15 23 42 / .025), 0 8px 24px rgb(15 23 42 / .025);
   }
   .ronet-signal {
-    background:
-      radial-gradient(circle at 92% 10%, color-mix(in srgb, var(--brand-aqua) 26%, transparent), transparent 36%),
-      linear-gradient(135deg, color-mix(in srgb, var(--primary) 9%, var(--card)), var(--card) 58%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 5%, var(--card)), var(--card) 62%);
   }
   .ronet-grid {
-    background-image: radial-gradient(circle, color-mix(in srgb, var(--primary) 18%, transparent) 1px, transparent 1px);
-    background-size: 22px 22px;
+    background: var(--background);
   }
   .ronet-plan {
     position: relative;
-    isolation: isolate;
     overflow: hidden;
   }
-  .ronet-plan::after {
+  .ronet-plan::before {
     content: "";
     position: absolute;
-    z-index: -1;
-    inline-size: 9rem;
-    block-size: 9rem;
-    inset: -4rem -3rem auto auto;
-    border: 1.25rem solid color-mix(in srgb, var(--primary) 10%, transparent);
-    border-radius: 999px;
+    inset: 0 auto 0 0;
+    inline-size: 2px;
+    background: color-mix(in srgb, var(--primary) 65%, transparent);
+    opacity: .6;
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
