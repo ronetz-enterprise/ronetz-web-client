@@ -5,14 +5,17 @@ import { toast } from 'sonner';
 
 export function useCountries() {
   const [countries, setCountries] = useState<Country[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await countryApi.getAll();
       setCountries(data);
     } catch (error) {
+      setError("Impossible de charger les données. Réessayez.");
       toast.error("Erreur lors du chargement des pays");
       console.error(error);
     } finally {
@@ -45,5 +48,5 @@ export function useCountries() {
     }
   }, [refresh]);
 
-  return { countries, loading, createCountry, refresh, toggleCountryBlock };
+  return { error, countries, loading, createCountry, refresh, toggleCountryBlock };
 }

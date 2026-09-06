@@ -5,14 +5,17 @@ import { toast } from 'sonner';
 
 export const useUsers = () => {
   const [users, setUsers] = useState<UserDetails[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const  data  = await userApi.getAll();
       setUsers(data);
     } catch (error) {
+      setError("Impossible de charger les données. Réessayez.");
       toast.error('Erreur lors du chargement des utilisateurs');
     } finally {
       setLoading(false);
@@ -53,7 +56,7 @@ export const useUsers = () => {
     fetchUsers();
   }, [fetchUsers]);
 
-  return {
+  return { error,
     users,
     loading,
     refresh: fetchUsers,

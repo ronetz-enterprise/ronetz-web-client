@@ -26,9 +26,9 @@ export default function Page() {
                 (below) then makes the rail fill exactly that box instead of
                 assuming 100svh. */}
             <div className="relative bg-background-0 flex min-h-0 flex-1 [transform:translateZ(0)] mb-1">
-                <AppSidebar className="h-full border-none p-0.5 " />
+                <AppSidebar className="h-full border-none pr-0.25 " />
                 <SidebarInset className="min-h-0 bg-background-0">
-                    <main className="min-h-0 flex-1 my-1 ml-0 m-1.5 bg-background border rounded-3xl overflow-y-auto">
+                    <main className="min-h-0 flex-1 my-1 mx-0 m-1.5 bg-background border overflow-y-auto">
                         <Outlet />
                     </main>
                 </SidebarInset>

@@ -29,7 +29,7 @@ export const logsColumns: ColumnDef<SystemLog>[] = [
     cell: ({ row }) => {
       const niveau = row.getValue<string>("level");
       return (
-        <StatusBadge tone={levelTone(niveau)} className="uppercase tracking-widest text-[10px] font-semibold">
+        <StatusBadge tone={levelTone(niveau)} >
           {niveau}
         </StatusBadge>
       );
@@ -40,7 +40,7 @@ export const logsColumns: ColumnDef<SystemLog>[] = [
     header: "Composant",
     cell: ({ row }) => {
       return (
-        <span className="font-bold text-foreground bg-muted px-2 py-1 rounded-md">
+        <span className="font-mono text-xs text-foreground">
           {row.getValue<string>("component")}
         </span>
       );
@@ -51,7 +51,7 @@ export const logsColumns: ColumnDef<SystemLog>[] = [
     header: "Message",
     cell: ({ row }) => {
       return (
-        <span className="text-muted-foreground truncate max-w-xl inline-block align-bottom">
+        <span title={row.getValue<string>("message")} className="text-muted-foreground truncate max-w-xs lg:max-w-xl inline-block align-bottom">
           {row.getValue<string>("message")}
         </span>
       );

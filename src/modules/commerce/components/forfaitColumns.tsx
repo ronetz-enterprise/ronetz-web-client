@@ -20,7 +20,7 @@ const baseForfaitColumns: ColumnDef<Forfait>[] = [
     {
         accessorKey: "name",
         header: "Nom",
-        cell: ({ row }) => <span className="font-medium text-foreground">{row.getValue<string>("name")}</span>,
+        cell: ({ row }) => <span title={row.original.name} className="block max-w-64 truncate font-medium text-foreground">{row.getValue<string>("name")}</span>,
     },
     {
         accessorKey: "price",
@@ -77,7 +77,7 @@ export function getForfaitColumns(actions: ForfaitTableActions = {}): ColumnDef<
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-2 w-9 rounded-lg text-muted-foreground hover:text-foreground"
+                                    className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground"
                                     aria-label="Menu actions"
                                 >
                                     <MoreHorizontal className="h-4 w-4" />
@@ -89,9 +89,9 @@ export function getForfaitColumns(actions: ForfaitTableActions = {}): ColumnDef<
                                     onClick={() => onToggleActive(forfait.id)}
                                 >
                                     {forfait.active ? (
-                                        <Ban className="mr-2 h-0 w-4" />
+                                        <Ban className="mr-2 h-4 w-4" />
                                     ) : (
-                                        <RotateCcw className="mr-2 h-0 w-4" />
+                                        <RotateCcw className="mr-2 h-4 w-4" />
                                     )}
                                     {forfait.active ? "Désactiver" : "Réactiver"}
                                 </DropdownMenuItem>

@@ -12,11 +12,11 @@ interface JetonCardProps {
   onClick?: () => void;
 }
 
-const statusGradient: Record<SubscriptionStatus, string> = {
-  PAID:      "from-emerald-500 to-emerald-700",
-  PENDING:   "from-amber-500 to-orange-600",
-  CANCELLED: "from-zinc-500 to-zinc-700",
-  EXPIRED:   "from-zinc-700 to-zinc-900",
+const statusTone: Record<SubscriptionStatus, string> = {
+  PAID:      "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
+  PENDING:   "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400",
+  CANCELLED: "bg-muted text-muted-foreground",
+  EXPIRED:   "bg-muted text-muted-foreground",
 };
 
 const statusIcon: Record<SubscriptionStatus, React.ReactNode> = {
@@ -47,29 +47,19 @@ export const JetonCard: React.FC<JetonCardProps> = ({ subscription, isHistory = 
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onClick={onClick}
-      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") onClick(); } : undefined}
+      onKeyDown={onClick ? (e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onClick(); } } : undefined}
       className={cn(
-        "group relative w-full aspect-[1.7] rounded-xl p-5",
-        "overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg",
-        "text-white bg-gradient-to-br",
-        onClick && "cursor-pointer",
-        statusGradient[status]
+        "relative w-full rounded-lg border border-(--card-border) shadow-(--card-shadow) bg-card p-4 text-card-foreground",
+        "overflow-hidden transition-colors duration-150 motion-reduce:transition-none",
+        onClick && "cursor-pointer hover:border-primary/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       )}
     >
-      {/* Subtle overlay on hover */}
-      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-      {/* Background circle */}
-      <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-
-      <Wifi className="absolute right-5 top-5 h-5 w-5 opacity-40" />
-
       {/* Header */}
       <div className="mb-4 flex items-start justify-between">
-        <div className="h-7 w-10 rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-sm" />
+        <Wifi className="size-4 text-muted-foreground" />
         <div className="flex flex-col items-end gap-1">
-          <span className="text-sm font-semibold tracking-wide">Rik</span>
-          <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium bg-white/20">
+          <span className="text-sm font-semibold tracking-wide">Accès Wi-Fi</span>
+          <span className={cn("inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium", statusTone[status])}>
             {statusIcon[status]}
             {statusLabel[status]}
           </span>
@@ -77,24 +67,24 @@ export const JetonCard: React.FC<JetonCardProps> = ({ subscription, isHistory = 
       </div>
 
       {/* Amount */}
-      <div className="mb-3 font-mono text-lg font-bold tracking-wider text-white/95">
+      <div className="mb-3 font-mono text-lg font-bold tracking-wider text-foreground">
         {formatAmount(amount, currency)}
       </div>
 
       {/* Token reference */}
-      <div className="mb-3 rounded-lg bg-black/25 backdrop-blur-sm border border-white/10 p-2.5">
+      <div className="mb-3 rounded-lg bg-muted/50 border border-border p-2.5">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[10px] text-white/50 mb-0.5">
+            <p className="text-[10px] text-muted-foreground mb-0.5">
               {tokenId ? "TOKEN" : "RÉFÉRENCE"}
             </p>
-            <p className="font-mono text-xs tracking-wider truncate text-white/90">
+            <p className="font-mono text-xs tracking-wider truncate text-foreground">
               {tokenId ? `${tokenId.slice(0, 8)}…` : `${id.slice(0, 8)}…`}
             </p>
           </div>
           <button
             onClick={(e) => copy(e, tokenId ?? id, tokenId ? "Token" : "Référence")}
-            className="shrink-0 p-1.5 rounded-md bg-white/10 hover:bg-white/20 transition"
+            className="flex size-10 shrink-0 items-center justify-center rounded-md hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
             title="Copier"
           >
             <Copy className="h-3.5 w-3.5" />
@@ -104,11 +94,11 @@ export const JetonCard: React.FC<JetonCardProps> = ({ subscription, isHistory = 
 
       {/* Footer */}
       <div className="flex items-end justify-between text-xs">
-        <div className="flex items-center gap-1.5 text-white/70">
+        <div className="flex items-center gap-1.5 text-muted-foreground">
           <Clock className="h-3 w-3" />
           {paidAt ? new Date(paidAt).toLocaleDateString("fr-FR") : "—"}
         </div>
-        <div className="px-2 py-0.5 rounded-md bg-white/15 text-white/80 text-[10px] font-medium">
+        <div className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground text-[10px] font-medium">
           {isHistory ? "Historique" : "Actif"}
         </div>
       </div>

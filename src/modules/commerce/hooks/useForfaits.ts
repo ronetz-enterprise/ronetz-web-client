@@ -6,15 +6,18 @@ import { toast } from "sonner";
 
 export const useForfaits = (siteId:string|null) => {
   const [forfaits, setForfaits] = useState<Forfait[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchForfaits = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const { data } = await forfaitApi.getAll(siteId);
       console.log(data);
       setForfaits(data);
     } catch {
+      setError("Impossible de charger les données. Réessayez.");
       toast.error("Erreur lors du chargement des forfaits");
     } finally {
       setLoading(false);
@@ -69,7 +72,7 @@ export const useForfaits = (siteId:string|null) => {
     fetchForfaits();
   }, [fetchForfaits]);
 
-  return {
+  return { error,
     forfaits,
     loading,
     refresh: fetchForfaits,

@@ -41,10 +41,12 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
         },
         {
             accessorKey: "siteId",
-            header: "Site ID",
+            header: "Site",
         },
+        { accessorKey: "vpnIpAddress", header: "Adresse IP", cell: ({ row }) => <span className="font-mono text-xs">{row.original.vpnIpAddress ?? "—"}</span> },
         {
             accessorKey: "status",
+            filterFn: "equals",
             header: "Statut",
             cell: ({ row }) => {
                 const statut = row.getValue<Routeur["status"]>("status");
@@ -85,14 +87,14 @@ export function getRouteurColumns(actions: RouteurActions): ColumnDef<Routeur>[]
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
-                                {r.status === "PROVISIONED" && (
+                                {r.status === "PROVISIONED" && actions.onActivate && (
                                     <DropdownMenuItem onClick={() => actions.onActivate?.(r.id)}>
                                         <Power className="mr-2 h-4 w-4" />
                                         Activer
                                     </DropdownMenuItem>
                                 )}
 
-                                {r.status === "ACTIVE" && (
+                                {r.status === "ACTIVE" && actions.onRotateSecrets && (
                                     <DropdownMenuItem
                                         onClick={() => {
                                             if (window.confirm("Régénérer les secrets VPN et RADIUS ? Les connexions actives seront interrompues.")) {

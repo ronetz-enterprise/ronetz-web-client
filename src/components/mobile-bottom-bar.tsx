@@ -25,14 +25,14 @@ export function MobileBottomBar() {
             className="fixed inset-x-0 z-[60] flex justify-center md:hidden"
             style={{ bottom: `calc(${MOBILE_BOTTOMBAR_GAP} + env(safe-area-inset-bottom))` }}
         >
-            <div className="flex items-center gap-1 rounded-full border bg-background/95 p-1.5 shadow-lg backdrop-blur supports-backdrop-filter:bg-background/80">
+            <div className="flex items-center gap-1 rounded-lg border bg-background p-1.5">
                 <button
                     type="button"
                     aria-label={openMobile ? "Fermer le menu" : "Ouvrir le menu"}
                     aria-expanded={openMobile}
                     onClick={() => setOpenMobile(!openMobile)}
                     className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-foreground transition-colors hover:bg-accent",
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring",
                         openMobile && "bg-accent"
                     )}
                 >
@@ -46,7 +46,7 @@ export function MobileBottomBar() {
                 <button
                     type="button"
                     aria-label="Rechercher"
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-foreground transition-colors hover:bg-accent"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring"
                 >
                     <Search className="h-5 w-5" />
                 </button>

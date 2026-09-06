@@ -1,6 +1,6 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { type PaymentMethod } from "../types";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/shared/components/StatusBadge";
 
 export const columns: ColumnDef<PaymentMethod>[] = [
     {
@@ -22,11 +22,11 @@ export const columns: ColumnDef<PaymentMethod>[] = [
     },
     {
         accessorKey: "active",
-        header: "Status",
+        header: "Statut",
         cell: ({ row }) => (
-            <Badge variant={row.original.active ? "default" : "destructive"}>
+            <StatusBadge tone={row.original.active ? "success" : "neutral"}>
                 {row.original.active ? "Actif" : "Inactif"}
-            </Badge>
+            </StatusBadge>
         )
     },
     {

@@ -5,14 +5,17 @@ import { toast } from "sonner";
 
 export const useSites = () => {
   const [sites, setSites] = useState<Site[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchSites = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const { data } = await siteApi.getSites();
       setSites(data);
     } catch {
+      setError("Impossible de charger les données. Réessayez.");
       toast.error("Impossible de charger les sites");
       setSites([]);
     } finally {
@@ -34,7 +37,7 @@ export const useSites = () => {
     fetchSites();
   }, [fetchSites]);
 
-  return {
+  return { error,
     sites,
     loading,
     refresh: fetchSites,

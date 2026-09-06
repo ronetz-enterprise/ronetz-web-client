@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { ArrowDownToLine, ArrowUpFromLine, RefreshCw, Wallet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -62,7 +61,6 @@ export default function WalletPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card
             className="relative overflow-hidden bg-white dark:bg-card [background-image:radial-gradient(140%_120%_at_100%_0%,color-mix(in_oklab,var(--accent-purple)_14%,transparent)_0%,transparent_65%)]"
-            style={{ "--card-edge-color": "var(--accent-purple)" } as CSSProperties}
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium text-muted-foreground">Solde disponible</CardTitle>

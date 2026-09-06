@@ -2,80 +2,80 @@
 :root[data-wifi-console] {
   --sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --heading: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
-  --background: #f8faf9;
-  --foreground: #242b28;
+  --background: #f8fafc;
+  --foreground: #27272a;
   --card: #ffffff;
-  --card-foreground: #242b28;
+  --card-foreground: #27272a;
   --popover: #ffffff;
-  --popover-foreground: #242b28;
-  --primary: #197448;
+  --popover-foreground: #27272a;
+  --primary: #4f46e5;
   --primary-foreground: #ffffff;
-  --secondary: #f0f3f1;
-  --secondary-foreground: #34423a;
-  --muted: #f1f4f2;
-  --muted-foreground: #637069;
-  --accent: #eaf4ee;
-  --accent-foreground: #19633f;
-  --border: #e0e6e2;
-  --input: #cdd7d0;
-  --ring: #197448;
-  --sidebar: #f3f6f4;
-  --sidebar-foreground: #3b4740;
-  --sidebar-accent: #e5eee8;
-  --sidebar-accent-foreground: #19633f;
-  --sidebar-primary: #19633f;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #334155;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #eef2ff;
+  --accent-foreground: #4338ca;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #4f46e5;
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #475569;
+  --sidebar-accent: #eef2ff;
+  --sidebar-accent-foreground: #4338ca;
+  --sidebar-primary: #4338ca;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-border: #e0e6e2;
-  --sidebar-ring: #197448;
-  --chart-1: #197448;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #4f46e5;
+  --chart-1: #4f46e5;
   --chart-2: #6e9980;
   --chart-3: #98b4a3;
   --chart-4: #bdd0c3;
   --chart-5: #dce7e0;
-  --accent-purple: #197448;
+  --accent-purple: #4f46e5;
   --radius-btn: 6px;
   --radius: 8px;
 }
 :root.dark[data-wifi-console] {
-  --background: #151a17;
-  --foreground: #e5ebe7;
-  --card: #1b211d;
-  --card-foreground: #e5ebe7;
-  --popover: #1e2621;
-  --popover-foreground: #e5ebe7;
-  --primary: #79c79b;
-  --primary-foreground: #102b1b;
-  --secondary: #263129;
-  --secondary-foreground: #d4ded7;
-  --muted: #252e28;
-  --muted-foreground: #a0aea5;
-  --accent: #263d2e;
-  --accent-foreground: #a0d9b5;
-  --border: #333f37;
-  --input: #435348;
-  --ring: #79c79b;
-  --sidebar: #181f1a;
-  --sidebar-foreground: #c7d3cb;
-  --sidebar-accent: #263d2e;
-  --sidebar-accent-foreground: #a0d9b5;
-  --sidebar-primary: #a0d9b5;
-  --sidebar-primary-foreground: #102b1b;
-  --sidebar-border: #333f37;
-  --chart-1: #79c79b;
+  --background: #18181b;
+  --foreground: #f4f4f5;
+  --card: #202024;
+  --card-foreground: #f4f4f5;
+  --popover: #27272a;
+  --popover-foreground: #f4f4f5;
+  --primary: #a5b4fc;
+  --primary-foreground: #1e1b4b;
+  --secondary: #27272a;
+  --secondary-foreground: #e2e8f0;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #2e2e48;
+  --accent-foreground: #c7d2fe;
+  --border: #3f3f46;
+  --input: #52525b;
+  --ring: #a5b4fc;
+  --sidebar: #18181b;
+  --sidebar-foreground: #d4d4d8;
+  --sidebar-accent: #2e2e48;
+  --sidebar-accent-foreground: #c7d2fe;
+  --sidebar-primary: #c7d2fe;
+  --sidebar-primary-foreground: #1e1b4b;
+  --sidebar-border: #3f3f46;
+  --chart-1: #a5b4fc;
   --chart-2: #619775;
-  --accent-purple: #79c79b;
+  --accent-purple: #a5b4fc;
 }
 [data-wifi-console] body, [data-wifi-console] .font-sans, [data-wifi-console] .font-heading { font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif; }
 [data-wifi-console] h1 { font-size: 24px; font-weight: 600; line-height: 1.3; letter-spacing: -.025em; }
-[data-wifi-console] [data-slot="card"] { border-radius: 8px; box-shadow: none; --card-spacing: 20px; }
+[data-wifi-console] [data-slot="card"] { border-radius: 8px; --card-spacing: 20px; }
 [data-wifi-console] [data-slot="card-title"] { font-size: 14px; font-weight: 600; }
 [data-wifi-console] [data-slot="button"] { border-radius: 6px; box-shadow: none; }
 [data-wifi-console] [data-slot="input"], [data-wifi-console] [data-slot="select-trigger"], [data-wifi-console] [data-slot="textarea"] { border-radius: 6px; box-shadow: none; }
 [data-wifi-console] [data-slot="dialog-content"], [data-wifi-console] [data-slot="dropdown-menu-content"] { border-radius: 10px; }
 [data-wifi-console] [data-slot="sidebar-menu-button"] { border-radius: 6px; }
 [data-wifi-console] [data-slot="sidebar-group-label"] { color: var(--muted-foreground); letter-spacing: .06em; }
-[data-wifi-console] [data-slot="table-head"] { height: 42px; font-size: 12px; font-weight: 500; }
-[data-wifi-console] [data-slot="table-cell"] { padding-top: 12px; padding-bottom: 12px; }
+[data-wifi-console] [data-slot="table-head"] { height: 32px; font-size: 12px; font-weight: 500; }
+[data-wifi-console] [data-slot="table-cell"] { padding-top: 8px; padding-bottom: 8px; }
 [data-wifi-console] .tabular-nums, [data-wifi-console] code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 [data-wifi-console] .ronet-signal, [data-wifi-console] .ronet-surface { background: var(--card); box-shadow: none; }
 [data-wifi-console] .ronet-plan::before { display: none; }

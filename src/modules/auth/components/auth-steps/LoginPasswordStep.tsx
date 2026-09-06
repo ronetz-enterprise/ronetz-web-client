@@ -5,7 +5,7 @@ import { EmailField } from "./EmailField"
 import { IconInput } from "./IconInput"
 import { errorClass } from "./styles"
 import type { AuthFormValues } from "./types"
-import { GlassButton } from "@/components/ui/glass-button"
+import { Button } from "@/components/ui/button"
 
 interface LoginPasswordStepProps {
   busy: boolean
@@ -37,16 +37,16 @@ export function LoginPasswordStep({ busy, email, register, errors, onSubmit, onE
         {errors.password && <p className={errorClass}>{errors.password.message}</p>}
       </div>
 
-      <GlassButton
+      <Button
         type="submit"
-        variant="primary"
+        variant="default"
         size="lg"
         disabled={busy}
         className="w-full mt-1"
       >
         {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Se connecter
-      </GlassButton>
+      </Button>
     </form>
   )
 }

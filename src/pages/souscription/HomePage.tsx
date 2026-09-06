@@ -140,8 +140,7 @@ const HomePage: React.FC = () => {
                   {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 m-3 rounded-md" />)}
                 </div>
               ) : transactionsPreview.length > 0 ? (
-                <Card className="gap-0 p-0 divide-y divide-[#f0f0f0] overflow-hidden gap-0  cursor-pointer outline-none ring-[#f0f0f0] 
-">
+                <Card className="gap-0 p-0 divide-y divide-border overflow-hidden">
                   {transactionsPreview.map(s => (
                     <TransactionRow
                       key={s.id}

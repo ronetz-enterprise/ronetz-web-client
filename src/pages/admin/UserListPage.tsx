@@ -5,10 +5,10 @@ import { useAuthStore } from '@/modules/auth/store/authStore';
 
 const UserListPage: React.FC = () => {
   const { user } = useAuthStore();
-  const { users, loading, deleteUser, toggleUserStatus, grantAdminWifi } = useUsers();
+  const { users, loading, error, refresh, deleteUser, toggleUserStatus, grantAdminWifi } = useUsers();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-0">
       <div className="flex items-center justify-between px-5 border-b py-3">
         <h1 className="text-xl font-semibold text-foreground tracking-tight">Gestion Utilisateurs</h1>
         
@@ -17,7 +17,7 @@ const UserListPage: React.FC = () => {
       <div className="">
         <UserTable
           users={users}
-          loading={loading}
+          loading={loading} error={error} onRetry={refresh}
           currentUserId={user?.id ?? ''}
           onDelete={deleteUser}
           onToggleStatus={toggleUserStatus}

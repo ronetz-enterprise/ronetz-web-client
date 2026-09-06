@@ -1,13 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/geist";
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-heading: var(--font-sans);
-  --font-sans: 'Manrope Variable', sans-serif;
+  --font-sans: 'Geist Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -61,16 +61,10 @@
   }
 }
 
-/*
- * Design system "Platform Console" (charte-graphique.html) : palette
- * quasi-monochrome, un seul bouton plein par écran (toujours noir/blanc
- * selon le thème), couleur réservée aux statuts (accent-green/yellow/
- * purple/blue). --radius-btn est un point d'extension utilisé uniquement
- * par le bouton (voir components/ui/button.tsx) pour un rendu pilule.
- */
+/* Console tokens: neutral surfaces, indigo actions, semantic status colors. */
 :root {
-  --background: #fff;
-  --foreground: #0d0d0d;
+  --background: #ffffff;
+  --foreground: #27272a;
   --card: #ffffff;
   /* --back is a fixed dark chrome surface (header bar, sidebar backdrop) —
      unlike --card/--background it does NOT flip in .dark, so its own
@@ -78,24 +72,24 @@
      on it always needs light text, whichever theme the rest of the app is
      in. Without this, text/icons here were inheriting the themed
      --foreground (near-black in light mode) onto a near-black surface. */
-  --back:#f5f5f5;
+  --back:#1d1d1d;
   --back-foreground: #171717;
-  --card-foreground: #0d0d0d;
+  --card-foreground: #27272a;
   --popover: #ffffff;
-  --popover-foreground: #0d0d0d;
-  --primary: #76c741;
+  --popover-foreground: #27272a;
+  --primary: #11b034;
   --primary-foreground: #ffffff;
   --secondary: #f3f3f4;
-  --secondary-foreground: #0d0d0d;
+  --secondary-foreground: #27272a;
   --muted: #f7f7f8;
   --muted-foreground: #6e6e6e;
   --accent: #ececec;
-  --accent-foreground: #0d0d0d;
+  --accent-foreground: #27272a;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --border: #eaeaea;
   --input: #e5e5e5;
-  --ring: #0d0d0d;
+  --ring: #6366f1;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -105,12 +99,12 @@
   --radius-btn: 0.5rem;
   --sidebar: #ffffff00;
   --sidebar-foreground: #3d3d3d;
-  --sidebar-primary: #0d0d0d;
+  --sidebar-primary: #27272a;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #deebe0;
-  --sidebar-accent-foreground: #128a1e;
+  --sidebar-accent: #e7e7e7;
+  --sidebar-accent-foreground: #0d0e0d;
   --sidebar-border: #e5e5e500;
-  --sidebar-ring: #0d0d0d;
+  --sidebar-ring: #27272a;
 
   /* Accents de statut — jamais utilisés comme couleur de bouton principal */
   --accent-green: #10a37f;
@@ -131,8 +125,8 @@
   --card-foreground: #f5f5f5;
   --popover: #242424;
   --popover-foreground: #f5f5f5;
-  --primary: #419a3e;
-  --primary-foreground: #0d0d0d;
+  --primary: #a5b4fc;
+  --primary-foreground: #27272a;
   --secondary: #2a2a2a;
   --secondary-foreground: #f5f5f5;
   --muted: #242424;
@@ -152,9 +146,9 @@
   --sidebar: #000;
   --sidebar-foreground: #f5f5f5;
   --sidebar-primary: #f5f5f5;
-  --sidebar-primary-foreground: #0d0d0d;
-  --sidebar-accent: #202621;
-  --sidebar-accent-foreground: #2cd547;
+  --sidebar-primary-foreground: #27272a;
+  --sidebar-accent: #2e2e48;
+  --sidebar-accent-foreground: #c7d2fe;
   --sidebar-border: #2c2c2c;
   --sidebar-ring: #f5f5f5;
 
@@ -176,5 +170,34 @@
   html {
     @apply font-sans;
 
+  }
+}
+/* Almost-flat card elevation; borders remain the main surface separator. */
+:root {
+  --card-shadow: 0 1px 1px rgb(0 0 0 / 3%), 0 2px 5px rgb(0 0 0 / 2.5%);
+  --card-border: var(--border);
+}
+
+:root.dark {
+  --card-shadow: 0 1px 1px rgb(0 0 0 / 2%), 0 2px 4px rgb(0 0 0 / 1.5%);
+  --card-border: color-mix(in srgb, var(--border) 88%, white 12%);
+}
+
+/* Table toolbar capsules keep their shape inside the console theme too. */
+:root [data-slot="table-toolbar"] [data-slot="input"],
+:root [data-slot="table-toolbar"] [data-slot="button"] {
+  border-radius: 9999px;
+  height: 32px;
+  min-height: 32px;
+  box-shadow: none;
+}
+:root [data-slot="table-toolbar"] [data-slot="input"] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+@media (pointer: coarse) {
+  :root [data-slot="table-toolbar"] [data-slot="button"],
+  :root [data-slot="table-toolbar"] [data-slot="input"] {
+    min-height: 40px;
   }
 }

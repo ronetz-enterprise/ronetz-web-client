@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import type { Site } from '../types';
 
 interface SiteDialogProps {
@@ -27,8 +27,8 @@ export function SiteDialog({ onCreate }: SiteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"primary-glass"} size="xs" className=" rounded-full px-5">
-          Ajouter Site
+        <Button variant="default" size="xs" className="px-5">
+          <Plus className="size-4" /> Ajouter un site
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

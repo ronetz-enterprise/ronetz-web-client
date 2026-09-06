@@ -35,6 +35,7 @@ export const getCountryColumns = (actions: CountryTableActions): ColumnDef<Count
   },
   {
     id: "access",
+    accessorFn: (country) => country.active,
     header: "Accès app",
     cell: ({ row }) => {
       const blocked = Boolean(!row.original.active);
@@ -47,6 +48,7 @@ export const getCountryColumns = (actions: CountryTableActions): ColumnDef<Count
   },
   {
     id: "actions",
+    enableSorting: false,
     header: () => <div className="text-right">Actions</div>,
     cell: ({ row }) => {
       const c = row.original;

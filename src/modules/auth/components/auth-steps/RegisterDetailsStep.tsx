@@ -1,7 +1,7 @@
 import type { FieldErrors, UseFormRegister } from "react-hook-form"
 import { Loader2, Lock, User } from "lucide-react"
 
-import { GlassButton } from "@/components/ui/glass-button"
+import { Button } from "@/components/ui/button"
 import { EmailField } from "./EmailField"
 import { IconInput } from "./IconInput"
 import { errorClass } from "./styles"
@@ -56,16 +56,16 @@ export function RegisterDetailsStep({
         {errors.password && <p className={errorClass}>{errors.password.message}</p>}
       </div>
 
-      <GlassButton
+      <Button
         type="submit"
-        variant="primary"
+        variant="default"
         size="lg"
         disabled={busy}
         className="w-full mt-1"
       >
         {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Créer mon compte
-      </GlassButton>
+      </Button>
     </form>
   )
 }

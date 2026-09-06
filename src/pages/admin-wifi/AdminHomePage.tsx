@@ -47,13 +47,8 @@ const AdminHomePage: React.FC = () => {
 
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Predominantly-white card with a soft white→purple wash in the
-              corner — a light touch (a background wash + a matching tint on
-              the card's own bottom edge accent, see --card-edge-color in
-              components/ui/card.tsx) rather than a loud filled gradient. */}
           <Card
             className="relative overflow-hidden bg-white dark:bg-card [background-image:radial-gradient(140%_120%_at_100%_0%,color-mix(in_oklab,var(--accent-purple)_14%,transparent)_0%,transparent_65%)]"
-            style={{ "--card-edge-color": "var(--accent-purple)" } as React.CSSProperties}
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium text-muted-foreground">Solde</CardTitle>

@@ -5,14 +5,17 @@ import { toast } from 'sonner';
 
 export function usePaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await paymentMethodApi.getAll();
       setPaymentMethods(data);
     } catch (error) {
+      setError("Impossible de charger les données. Réessayez.");
       toast.error("Erreur lors du chargement des méthodes de paiement");
       console.error(error);
     } finally {
@@ -35,5 +38,5 @@ export function usePaymentMethods() {
     }
   };
 
-  return { paymentMethods, loading, createPaymentMethod, refresh };
+  return { error, paymentMethods, loading, createPaymentMethod, refresh };
 }

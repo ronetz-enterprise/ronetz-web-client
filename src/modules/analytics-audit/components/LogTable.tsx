@@ -6,22 +6,10 @@ import { logsColumns } from './logsColumns';
 interface LogTableProps {
   logs: SystemLog[];
   loading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 }
 
-export const LogTable: React.FC<LogTableProps> = ({ logs, loading }) => {
-  if (loading) {
-    return (
-      <div className="space-y-3">
-        {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} className="h-12 bg-muted animate-pulse rounded-lg" />
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="font-mono text-xs">
-      <DataTable columns={logsColumns} data={logs} />
-    </div>
-  );
+export const LogTable: React.FC<LogTableProps> = ({ logs, loading, error, onRetry }) => {
+  return <DataTable columns={logsColumns} data={logs} loading={loading} error={error} onRetry={onRetry} emptyMessage="Aucun événement enregistré." filters={[{ columnId: "level", label: "Niveau", options: [...new Set(logs.map((log) => log.level))].map((level) => ({ label: level, value: level })) }]} />;
 };

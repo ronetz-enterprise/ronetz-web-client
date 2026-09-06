@@ -85,7 +85,7 @@ const WifiDomainSetupPage: React.FC = () => {
   return (
     <div className="min-h-svh flex flex-col items-center justify-center bg-background p-6 md:p-10">
       <div className="w-full max-w-md">
-        <Card className="rounded-lg border shadow-lg">
+        <Card className="rounded-lg border">
           <CardHeader className="space-y-3 text-center pb-2">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               <Wifi className="h-7 w-7" />

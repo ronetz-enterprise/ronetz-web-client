@@ -4,7 +4,7 @@ import { Loader2, Mail } from "lucide-react"
 import { IconInput } from "./IconInput"
 import { errorClass } from "./styles"
 import type { AuthFormValues } from "./types"
-import { GlassButton } from "@/components/ui/glass-button"
+import { Button } from "@/components/ui/button"
 
 interface EmailStepProps {
   busy: boolean
@@ -31,16 +31,16 @@ export function EmailStep({ busy, register, errors, onSubmit }: EmailStepProps) 
         {errors.email && <p className={errorClass}>{errors.email.message}</p>}
       </div>
 
-      <GlassButton
+      <Button
         type="submit"
-        variant="primary"
+        variant="default"
         size="lg"
         disabled={busy}
-        className="w-full mt-1 rounded-xl"
+        className="w-full mt-1"
       >
         {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Continuer
-      </GlassButton>
+      </Button>
     </form>
   )
 }

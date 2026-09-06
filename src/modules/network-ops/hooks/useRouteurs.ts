@@ -4,16 +4,19 @@ import type { Routeur } from "../types";
 import { toast } from "sonner";
 export const useRouteurs = () => {
   const [routeurs, setRouteurs] = useState<Routeur[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchRouteurs = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const { data } = await routeurApi.list();
       console.log("liste routeur");
       console.log(data);
       setRouteurs(data);
     } catch (error) {
+      setError("Impossible de charger les données. Réessayez.");
       toast.error("Erreur lors du chargement des routeurs");
     } finally {
       setLoading(false);
@@ -81,7 +84,7 @@ export const useRouteurs = () => {
     fetchRouteurs();
   }, [fetchRouteurs]);
 
-  return {
+  return { error,
     routeurs,
     loading,
     refresh: fetchRouteurs,

@@ -1,10 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/geist";
 
 :root {
-  --sans: 'Manrope Variable';
-  --heading: 'Manrope Variable', system-ui, sans-serif;
+  --sans: 'Geist Variable';
+  --heading: 'Geist Variable', system-ui, sans-serif;
 }
 
 body {

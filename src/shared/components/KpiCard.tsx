@@ -11,11 +11,11 @@ interface KpiCardProps {
 
 export function KpiCard({ title, value, subtitle, icon: Icon, loading }: KpiCardProps) {
   return (
-    <Card className="">
+    <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-          <Icon className="h-4 w-4 text-primary" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
+          <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
       </CardHeader>
       <CardContent>
@@ -23,7 +23,7 @@ export function KpiCard({ title, value, subtitle, icon: Icon, loading }: KpiCard
           <Skeleton className="h-8 w-32 mt-1" />
         ) : (
           <>
-            <p className="text-[26px] font-semibold tracking-tight">{value}</p>
+            <p className="font-mono tabular-nums text-[26px] font-semibold tracking-tight">{value}</p>
             {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
           </>
         )}

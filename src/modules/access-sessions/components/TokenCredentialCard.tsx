@@ -58,10 +58,10 @@ export const TokenCredentialCard: React.FC<TokenCredentialCardProps> = ({ token 
       role="button"
       tabIndex={0}
       onClick={goToDetails}
-      onKeyDown={(e) => e.key === "Enter" && goToDetails()}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goToDetails(); } }}
       className={cn(
-        "gap-0 p-5 cursor-pointer outline-none ring-[#f0f0f0] ",
-        "transition-all duration-200 hover:shadow-md hover:ring-primary/30 hover:-translate-y-0.5",
+        "gap-0 p-5 cursor-pointer outline-none ",
+        "transition-colors duration-150 hover:border-primary/40 motion-reduce:transition-none",
         "focus-visible:ring-2 focus-visible:ring-ring/50",
         token.status !== "ACTIVE" && "opacity-60"
       )}
@@ -69,8 +69,8 @@ export const TokenCredentialCard: React.FC<TokenCredentialCardProps> = ({ token 
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-            <Wifi className="size-4 text-primary" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-muted">
+            <Wifi className="size-4 text-muted-foreground" />
           </div>
           <p className="text-[15px] font-semibold leading-tight truncate">{token.siteName}</p>
         </div>

@@ -96,6 +96,7 @@ export const getUsersColumns = (actions: UserTableActions): ColumnDef<UserDetail
   },
   {
     id: "name",
+    accessorFn: (user) => [user.firstName, user.lastName].filter(Boolean).join(" "),
     header: "Identité",
     cell: ({ row }) => {
       const fn = row.original.firstName;
@@ -133,10 +134,11 @@ export const getUsersColumns = (actions: UserTableActions): ColumnDef<UserDetail
   {
     accessorKey: "createdAt",
     header: "Création",
-    cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+    cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString("fr-FR"),
   },
   {
     id: "actions",
+    enableSorting: false,
     header: () => <div className="text-right">Actions</div>,
     cell: ({ row }) => {
       const u = row.original;
