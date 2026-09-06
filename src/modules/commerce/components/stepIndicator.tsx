@@ -1,6 +1,7 @@
-import React from 'react';
-import { cn } from '@/shared/lib/utils';
-import type { PaymentStep } from '@/modules/payments/hooks/usePaiemetStepper';
+import React from "react";
+import { Check } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
+import type { PaymentStep } from "@/modules/payments/hooks/usePaiemetStepper";
 
 interface Step {
   id: PaymentStep;
@@ -8,9 +9,9 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { id: 'method', label: 'Méthode' },
-  { id: 'phone', label: 'Téléphone' },
-  { id: 'confirmation', label: 'Confirmation' },
+  { id: "method", label: "Paiement" },
+  { id: "phone", label: "Téléphone" },
+  { id: "confirmation", label: "Vérification" },
 ];
 
 interface StepIndicatorProps {
@@ -18,32 +19,57 @@ interface StepIndicatorProps {
 }
 
 export const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => {
-  const currentIndex = STEPS.findIndex(step => step.id === currentStep);
+  const currentIndex = STEPS.findIndex((step) => step.id === currentStep);
 
   return (
-    <div className="w-full space-y-1.5">
-      <p className="text-xs text-muted-foreground text-right">
-        Étape {currentIndex + 1} / {STEPS.length}
-      </p>
-      <div className="flex gap-1">
+    <nav aria-label="Progression du paiement" className="w-full">
+      <ol className="flex items-center">
         {STEPS.map((step, index) => {
           const isCompleted = index < currentIndex;
           const isCurrent = index === currentIndex;
+
           return (
-            <div
-              key={step.id}
-              className="relative flex-1 h-0.5 rounded-full bg-muted overflow-hidden"
-            >
-              <div
-                className={cn(
-                  "absolute inset-0 rounded-full transition-transform duration-500 ease-out origin-left",
-                  (isCompleted || isCurrent) ? "bg-primary scale-x-100" : "scale-x-0"
-                )}
-              />
-            </div>
+            <React.Fragment key={step.id}>
+              {index > 0 && (
+                <li
+                  aria-hidden="true"
+                  className={cn(
+                    "mx-2 h-px flex-1 sm:mx-3",
+                    index <= currentIndex ? "bg-primary" : "bg-border"
+                  )}
+                />
+              )}
+              <li
+                aria-current={isCurrent ? "step" : undefined}
+                className="flex shrink-0 items-center gap-2"
+              >
+                <span
+                  className={cn(
+                    "flex size-6 items-center justify-center rounded-full border text-[11px] font-semibold",
+                    isCompleted && "border-primary bg-primary text-primary-foreground",
+                    isCurrent && "border-primary text-primary",
+                    !isCompleted && !isCurrent && "border-border text-muted-foreground"
+                  )}
+                >
+                  {isCompleted ? (
+                    <Check className="size-3.5" aria-hidden="true" />
+                  ) : (
+                    index + 1
+                  )}
+                </span>
+                <span
+                  className={cn(
+                    "hidden text-xs font-medium sm:block",
+                    isCurrent ? "text-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  {step.label}
+                </span>
+              </li>
+            </React.Fragment>
           );
         })}
-      </div>
-    </div>
+      </ol>
+    </nav>
   );
 };
