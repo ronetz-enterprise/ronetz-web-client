@@ -1,8 +1,8 @@
 import { Check, Clock3, Database, Smartphone, Wifi } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/shared/lib/utils";
-import { formatAmount, formatData, formatDuration } from "@/shared/lib/format";
-import type { Forfait } from "../types";
+import type { Forfait } from "@/features/forfaits/types";
+import { formatData, formatDuration } from "@/features/forfaits/utils";
+import { cn } from "@/lib/utils";
 
 interface InternetPlanCardProps {
   forfait: Forfait;
@@ -17,7 +17,7 @@ export function InternetPlanCard({
   onSelect,
   className,
 }: InternetPlanCardProps) {
-  const isAvailable = Boolean(forfait.active);
+  const isAvailable = forfait.active !== false;
 
   return (
     <button
@@ -26,7 +26,7 @@ export function InternetPlanCard({
       disabled={!isAvailable}
       aria-pressed={selected}
       className={cn(
-        "group block h-full w-full rounded-[1.35rem] text-left outline-none",
+        "group block w-full rounded-[1.35rem] text-left outline-none",
         "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         className
       )}
@@ -74,10 +74,11 @@ export function InternetPlanCard({
             )}
           </div>
 
-          <div className="my-6">
-            <span className="text-3xl font-semibold tracking-[-0.045em] text-foreground">
-              {formatAmount(forfait.price, forfait.currency)}
+          <div className="my-6 flex items-end gap-2">
+            <span className="text-4xl font-semibold tracking-[-0.05em] text-foreground">
+              {forfait.price}
             </span>
+            <span className="pb-1 text-sm font-medium text-muted-foreground">FCFA</span>
           </div>
 
           <dl className="grid gap-3 border-t border-border/70 pt-4">
@@ -105,7 +106,7 @@ export function InternetPlanCard({
                 Appareils
               </dt>
               <dd className="text-sm font-semibold text-foreground">
-                {forfait.maxConcurrentDevices}
+                {forfait.deviceLimit}
               </dd>
             </div>
           </dl>
